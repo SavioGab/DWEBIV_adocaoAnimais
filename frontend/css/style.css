@@ -316,7 +316,7 @@ main {
     }
 }
 
-```css
+
 /* =========================
    LOGIN
 ========================= */
@@ -568,7 +568,63 @@ main {
     width: 100%;
     height: clamp(42px, 4vw, 48px);
 }
-```
 
+
+/* =========================
+   CADASTRO
+========================= */
+
+.cadastro-card {
+    max-width: 480px;
+}
+
+.cadastro-card .login-logo {
+    margin-bottom: 28px;
+}
+
+.cadastro-card .login-subtitulo {
+    margin-bottom: 25px;
+}
+
+.cadastro-card .campo-login {
+    margin-bottom: 16px;
+}
+
+.cadastro-card .botao-entrar {
+    margin-top: 8px;
+}
+
+.cadastro-card .criar-conta {
+    margin-top: 25px;
+}
+
+.olho {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+
+    border: none;
+    background: transparent;
+
+    font-size: 16px;
+    cursor: pointer;
+
+    padding: 5px;
+}
+
+
+
+
+/* Responsividade */
+
+@media (max-width: 500px) {
+
+    .cadastro-card {
+        max-width: 100%;
+    }
 
 }
+
+
+
