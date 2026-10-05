@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>AdotaPet - Login</title>
+    <title>Login - AdotaPet</title>
 
     <link rel="stylesheet" href="css/style.css">
 </head>
@@ -14,8 +14,9 @@
 
     <main class="login-container">
 
-        <div class="login-card">
+        <section class="login-card">
 
+            <!-- Logo -->
             <div class="login-logo">
                 <span>🐾</span>
                 <strong>AdotaPet</strong>
@@ -24,56 +25,118 @@
             <h1>Bem-vindo de volta!</h1>
 
             <p class="login-subtitulo">
-                Faça seu login para continuar.
+                Entre na sua conta para continuar
             </p>
 
-            <form>
 
+            <!-- Formulário -->
+            <form id="formLogin">
+
+                <!-- E-mail -->
                 <div class="campo-login">
-                    <label for="email">E-mail</label>
+
+                    <label for="email">
+                        E-mail
+                    </label>
 
                     <input
                         type="email"
                         id="email"
-                        placeholder="seuemail@exemplo.com"
+                        name="email"
+                        placeholder="Digite seu e-mail"
+                        autocomplete="email"
+                        required
                     >
+
+                    <small
+                        id="erro-email"
+                        class="mensagem-erro">
+                    </small>
+
                 </div>
 
+
+                <!-- Senha -->
                 <div class="campo-login">
-                    <label for="senha">Senha</label>
+
+                    <label for="senha">
+                        Senha
+                    </label>
 
                     <div class="senha-container">
 
                         <input
                             type="password"
                             id="senha"
-                            placeholder="Sua senha"
+                            name="senha"
+                            placeholder="Digite sua senha"
+                            autocomplete="current-password"
+                            required
                         >
 
-                        <span class="olho">◉</span>
+                        <button
+                            type="button"
+                            class="olho"
+                            id="botaoSenha"
+                            aria-label="Mostrar senha"
+                        >
+                            👁
+                        </button>
 
                     </div>
+
+                    <small
+                        id="erro-senha"
+                        class="mensagem-erro">
+                    </small>
+
                 </div>
 
-                <button type="submit" class="botao-entrar">
-                    Entrar
-                </button>
 
+                <!-- Esqueci a senha -->
                 <a href="#" class="esqueci-senha">
                     Esqueci minha senha
                 </a>
 
+
+                <!-- Mensagem geral -->
+                <div
+                    id="mensagem-login"
+                    class="mensagem-login"
+                    role="alert">
+                </div>
+
+
+                <!-- Botão -->
+                <button
+                    type="submit"
+                    class="botao-entrar"
+                    id="botaoEntrar"
+                >
+                    Entrar
+                </button>
+
             </form>
 
+
+            <!-- Cadastro -->
             <p class="criar-conta">
-                Ainda não tem uma conta?
-                <a href="cadastro.html">Criar conta</a>
+
+                Ainda não possui uma conta?
+
+                <a href="cadastro.html">
+                    Criar conta
+                </a>
+
             </p>
 
-        </div>
+        </section>
 
     </main>
-    
+
+
+    <!-- JavaScript -->
+    <script src="js/login.js"></script>
 
 </body>
 
