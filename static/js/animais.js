@@ -176,7 +176,7 @@ function criarCardAnimal(animal) {
     imagem.classList.add("imagem-animal");
 
     imagem.src =
-        animal.imagem || "img/pet-placeholder.jpg";
+    animal.imagem || "/static/img/pet-placeholder.jpg";
 
     imagem.alt =
         `Foto de ${animal.nome}`;
@@ -184,7 +184,7 @@ function criarCardAnimal(animal) {
 
     imagem.onerror = function () {
 
-        this.src = "img/pet-placeholder.jpg";
+    this.src = "/static/img/pet-placeholder.jpg";
 
     };
 
@@ -361,7 +361,7 @@ async function verificarDisponibilidade(
              */
 
             window.location.href =
-                `detalhes.html?id=${animal.id}`;
+                `/detalhe?id=${animal.id}`;
 
             return;
 

@@ -263,7 +263,9 @@ formCadastro.addEventListener(
 
             telefone: numerosTelefone,
 
-            senha: senha.value
+            senha: senha.value,
+
+            confirmarSenha: confirmarSenha.value
 
         };
 
@@ -281,7 +283,7 @@ formCadastro.addEventListener(
         try {
 
             // ==================================
-            // ENVIAR PARA O BACK-END MVC
+            // ENVIAR PARA O BACK-END
             // ==================================
 
             const resposta = await fetch(
@@ -324,13 +326,10 @@ formCadastro.addEventListener(
                     "block";
 
 
-                // Depois do cadastro,
-                // vai para o login.
-
                 setTimeout(function () {
 
                     window.location.href =
-                        "login.html";
+                        "/login";
 
                 }, 1500);
 

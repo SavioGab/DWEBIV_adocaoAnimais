@@ -206,7 +206,7 @@ formLogin.addEventListener("submit", async function (event) {
 
 
             // Vai para a página principal
-            window.location.href = "animais.html";
+            window.location.href = "/animais";
 
             return;
         }

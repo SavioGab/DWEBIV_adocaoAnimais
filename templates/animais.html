@@ -7,7 +7,7 @@
 
     <title>Animais disponíveis - AdotaPet</title>
 
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body class="pagina-animais">
@@ -15,11 +15,11 @@
     <!-- CABEÇALHO -->
     <header class="cabecalho-animais">
 
-        <a href="index.html" class="logo-adotapet">
+        <a href="{{ url_for('home') }}" class="logo-adotapet">
             🐾 AdotaPet
         </a>
 
-        <a href="doar.html" class="botao-doar">
+        <a href="#" class="botao-doar">
             + Colocar meu pet para adoção
         </a>
 
@@ -142,7 +142,7 @@
     </main>
 
 
-    <script src="js/animais.js"></script>
+    <script src="{{ url_for('static', filename='js/animais.js') }}"></script>
 
 </body>
 

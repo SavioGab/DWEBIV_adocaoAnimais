@@ -7,14 +7,14 @@
 
     <title>Cadastro - AdotaPet</title>
 
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body class="pagina-login">
 
-   <a href="index.html" class="botao-voltar">
-    ← Voltar
-</a>
+    <a href="{{ url_for('home') }}" class="botao-voltar">
+        ← Voltar
+    </a>
 
     <main class="login-container">
 
@@ -209,7 +209,7 @@
 
                 Já possui uma conta?
 
-                <a href="login.html">
+                <a href="{{ url_for('pagina_login') }}">
                     Entrar
                 </a>
 
@@ -221,7 +221,7 @@
 
 
     <!-- JavaScript -->
-    <script src="js/cadastro.js"></script>
+    <script src="{{ url_for('static', filename='js/cadastro.js') }}"></script>
 
 </body>
 
