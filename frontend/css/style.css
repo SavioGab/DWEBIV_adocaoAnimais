@@ -626,5 +626,441 @@ main {
 
 }
 
+.botao-voltar {
+    position: absolute;
+    top: 25px;
+    left: 30px;
+
+    display: inline-block;
+
+    padding: 9px 16px;
+
+    background-color: white;
+    color: #2f5d50;
+
+    border-radius: 10px;
+
+    text-decoration: none;
+
+    font-size: 16px;
+    font-weight: 600;
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+    transition: 0.2s;
+}
+
+.botao-voltar:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+}
+
+@media (max-width: 500px) {
+
+    .botao-voltar {
+        top: 15px;
+        left: 18px;
+
+        padding: 8px 13px;
+
+        font-size: 15px;
+    }
+
+}
+
+/* =========================================
+   TELA DE ANIMAIS
+========================================= */
+
+.pagina-animais {
+    margin: 0;
+    background: #edf3f1;
+    min-height: 100vh;
+}
 
 
+/* =========================================
+   CABEÇALHO
+========================================= */
+
+.cabecalho-animais {
+    width: 100%;
+    min-height: 70px;
+
+    background: white;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 40px;
+
+    box-sizing: border-box;
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+
+.logo-adotapet {
+    color: #2f5d50;
+
+    font-size: 24px;
+    font-weight: bold;
+
+    text-decoration: none;
+}
+
+
+.botao-doar {
+    background: #2f5d50;
+    color: white;
+
+    padding: 11px 18px;
+
+    border-radius: 10px;
+
+    text-decoration: none;
+
+    font-weight: 600;
+
+    transition: 0.2s;
+}
+
+
+.botao-doar:hover {
+    transform: translateY(-1px);
+}
+
+
+/* =========================================
+   CONTEÚDO
+========================================= */
+
+.conteudo-animais {
+    width: min(1200px, 92%);
+
+    margin: 0 auto;
+
+    padding: 45px 0;
+}
+
+
+.introducao-animais {
+    text-align: center;
+
+    margin-bottom: 30px;
+}
+
+
+.introducao-animais h1 {
+    margin-bottom: 8px;
+
+    color: #2f5d50;
+
+    font-size: clamp(25px, 4vw, 36px);
+}
+
+
+.introducao-animais p {
+    margin: 0;
+
+    color: #666;
+
+    font-size: 16px;
+}
+
+
+/* =========================================
+   FILTROS
+========================================= */
+
+.filtros-animais {
+    display: flex;
+
+    gap: 15px;
+
+    margin-bottom: 30px;
+
+    background: white;
+
+    padding: 20px;
+
+    border-radius: 14px;
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+
+.campo-pesquisa,
+.campo-filtro {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 7px;
+}
+
+
+.campo-pesquisa {
+    flex: 1;
+}
+
+
+.campo-filtro {
+    width: 220px;
+}
+
+
+.campo-pesquisa label,
+.campo-filtro label {
+    font-size: 14px;
+
+    font-weight: 600;
+
+    color: #333;
+}
+
+
+.campo-pesquisa input,
+.campo-filtro select {
+    height: 43px;
+
+    border: 1px solid #d5d5d5;
+
+    border-radius: 8px;
+
+    padding: 0 12px;
+
+    font-size: 15px;
+
+    box-sizing: border-box;
+
+    outline: none;
+}
+
+
+.campo-pesquisa input:focus,
+.campo-filtro select:focus {
+    border-color: #2f5d50;
+}
+
+
+/* =========================================
+   LISTA DE CARDS
+========================================= */
+
+.lista-animais {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 25px;
+}
+
+
+/* =========================================
+   CARD
+========================================= */
+
+.card-animal {
+    background: white;
+
+    border-radius: 15px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 3px 12px rgba(0, 0, 0, 0.08);
+
+    transition: 0.2s;
+}
+
+
+.card-animal:hover {
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+
+.imagem-animal {
+    width: 100%;
+
+    height: 220px;
+
+    object-fit: cover;
+
+    display: block;
+}
+
+
+.informacoes-animal {
+    padding: 20px;
+}
+
+
+.informacoes-animal h2 {
+    margin: 0 0 12px;
+
+    color: #2f5d50;
+
+    font-size: 23px;
+}
+
+
+.informacoes-animal p {
+    margin: 7px 0;
+
+    color: #555;
+
+    font-size: 14px;
+}
+
+
+/* =========================================
+   STATUS
+========================================= */
+
+.status-disponivel {
+    display: inline-block;
+
+    margin-top: 8px;
+
+    padding: 5px 9px;
+
+    border-radius: 20px;
+
+    background: #e5f3ec;
+
+    color: #2f5d50;
+
+    font-size: 12px;
+
+    font-weight: 600;
+}
+
+
+/* =========================================
+   BOTÃO ADOTAR
+========================================= */
+
+.botao-adotar {
+    width: 100%;
+
+    margin-top: 17px;
+
+    padding: 11px;
+
+    border: none;
+
+    border-radius: 9px;
+
+    background: #2f5d50;
+
+    color: white;
+
+    font-size: 15px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+
+.botao-adotar:hover {
+    opacity: 0.9;
+}
+
+
+.botao-adotar:disabled {
+    opacity: 0.6;
+
+    cursor: not-allowed;
+}
+
+
+/* =========================================
+   MENSAGENS
+========================================= */
+
+.mensagem-animais {
+    text-align: center;
+
+    padding: 25px;
+
+    color: #666;
+
+    font-size: 16px;
+}
+
+
+.mensagem-erro-animais {
+    color: #b42318;
+
+    background: #fff0ef;
+
+    border-radius: 10px;
+}
+
+
+/* =========================================
+   RESPONSIVIDADE
+========================================= */
+
+@media (max-width: 800px) {
+
+    .lista-animais {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+    .filtros-animais {
+        flex-direction: column;
+    }
+
+    .campo-filtro {
+        width: 100%;
+    }
+
+}
+
+
+@media (max-width: 550px) {
+
+    .cabecalho-animais {
+        padding: 15px 18px;
+
+        flex-direction: column;
+
+        gap: 12px;
+    }
+
+
+    .logo-adotapet {
+        font-size: 21px;
+    }
+
+
+    .botao-doar {
+        width: 100%;
+
+        text-align: center;
+
+        box-sizing: border-box;
+    }
+
+
+    .conteudo-animais {
+        padding: 30px 0;
+    }
+
+
+    .lista-animais {
+        grid-template-columns: 1fr;
+    }
+
+}
