@@ -1284,3 +1284,28 @@ main {
     color: white;
 }
 
+/* ==========================================
+   RECUPERAR SENHA
+   ========================================== */
+
+.pagina-login .login-subtitulo {
+    margin-bottom: 25px;
+}
+
+
+#mensagem-recuperacao {
+    margin-top: 15px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+
+#botaoEnviar:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+
+.pagina-login .criar-conta {
+    margin-top: 25px;
+}

@@ -87,7 +87,9 @@ formLogin.addEventListener("submit", async function (event) {
 
     if (email.value.trim() === "") {
 
-        erroEmail.textContent = "Digite seu e-mail.";
+        erroEmail.textContent =
+            "Digite seu e-mail.";
+
         erroEmail.style.display = "block";
 
         email.focus();
@@ -127,7 +129,7 @@ formLogin.addEventListener("submit", async function (event) {
 
 
     // ======================================
-    // PREPARA OS DADOS
+    // PREPARAR DADOS
     // ======================================
 
     const dadosLogin = {
@@ -140,18 +142,19 @@ formLogin.addEventListener("submit", async function (event) {
 
 
     // ======================================
-    // DESABILITA O BOTÃO
+    // DESABILITAR BOTÃO
     // ======================================
 
     botaoEntrar.disabled = true;
 
-    botaoEntrar.textContent = "Entrando...";
+    botaoEntrar.textContent =
+        "Entrando...";
 
 
     try {
 
         // ==================================
-        // ENVIA PARA O BACK-END
+        // ENVIAR PARA O BACK-END
         // ==================================
 
         const resposta = await fetch(
@@ -164,17 +167,20 @@ formLogin.addEventListener("submit", async function (event) {
                     "Content-Type": "application/json"
                 },
 
-                body: JSON.stringify(dadosLogin)
+                body: JSON.stringify(
+                    dadosLogin
+                )
 
             }
         );
 
 
         // ==================================
-        // RECEBE A RESPOSTA DO BACK-END
+        // RECEBER RESPOSTA
         // ==================================
 
-        const resultado = await resposta.json();
+        const resultado =
+            await resposta.json();
 
 
         // ==================================
@@ -183,18 +189,6 @@ formLogin.addEventListener("submit", async function (event) {
 
         if (resposta.ok) {
 
-            /*
-             * O back-end poderá retornar algo
-             * como:
-             *
-             * {
-             *     sucesso: true,
-             *     usuario: {...}
-             * }
-             */
-
-            // Guarda os dados do usuário
-            // para serem utilizados posteriormente
             if (resultado.usuario) {
 
                 sessionStorage.setItem(
@@ -205,7 +199,6 @@ formLogin.addEventListener("submit", async function (event) {
             }
 
 
-            // Vai para a página principal
             window.location.href = "/";
 
             return;
@@ -220,7 +213,8 @@ formLogin.addEventListener("submit", async function (event) {
             resultado.mensagem ||
             "E-mail ou senha incorretos.";
 
-        mensagemLogin.style.display = "block";
+        mensagemLogin.style.display =
+            "block";
 
 
     } catch (erro) {
@@ -232,22 +226,26 @@ formLogin.addEventListener("submit", async function (event) {
         mensagemLogin.textContent =
             "Não foi possível conectar ao servidor. Tente novamente.";
 
-        mensagemLogin.style.display = "block";
+        mensagemLogin.style.display =
+            "block";
+
 
         console.error(
             "Erro ao realizar login:",
             erro
         );
 
+
     } finally {
 
         // ==================================
-        // DEVOLVE O BOTÃO AO NORMAL
+        // DEVOLVE O BOTÃO
         // ==================================
 
         botaoEntrar.disabled = false;
 
-        botaoEntrar.textContent = "Entrar";
+        botaoEntrar.textContent =
+            "Entrar";
 
     }
 

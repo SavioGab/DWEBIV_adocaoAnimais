@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 
 
 # ==========================================
-# CONFIGURAÇÃO DO .ENV
+# CARREGAR .ENV
 # ==========================================
 
 caminho_env = os.path.join(
@@ -30,12 +30,25 @@ app = Flask(
 
 
 # ==========================================
-# CONEXÃO COM O SUPABASE
+# CONEXÃO COM SUPABASE
 # ==========================================
 
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_PUBLISHABLE_KEY = os.getenv("SUPABASE_PUBLISHABLE_KEY")
+SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+
+
+# Cliente normal
 supabase: Client = create_client(
-    os.getenv("SUPABASE_URL"),
-    os.getenv("SUPABASE_PUBLISHABLE_KEY")
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+)
+
+
+# Cliente administrativo
+supabase_admin: Client = create_client(
+    SUPABASE_URL,
+    SUPABASE_SERVICE_ROLE_KEY
 )
 
 
@@ -68,6 +81,34 @@ def pagina_detalhe():
     return render_template("detalhe.html")
 
 
+@app.route('/auth/confirm')
+def confirmar_email():
+    return render_template("confirmacao.html")
+
+
+@app.route('/recuperar-senha')
+def pagina_recuperar_senha():
+    return render_template("recuperar-senha.html")
+
+
+@app.route('/redefinir-senha')
+def pagina_redefinir_senha():
+    return render_template("redefinir-senha.html")
+
+
+# ==========================================
+# CONFIGURAÇÃO PÚBLICA DO SUPABASE
+# ==========================================
+
+@app.route('/api/supabase-config')
+def supabase_config():
+
+    return jsonify({
+        "url": SUPABASE_URL,
+        "key": SUPABASE_PUBLISHABLE_KEY
+    })
+
+
 # ==========================================
 # CADASTRO
 # ==========================================
@@ -77,6 +118,11 @@ def cadastro():
 
     dados = request.get_json()
 
+    if not dados:
+        return jsonify({
+            "mensagem": "Nenhum dado foi enviado."
+        }), 400
+
     nome = dados.get("nome")
     email = dados.get("email")
     telefone = dados.get("telefone")
@@ -84,9 +130,9 @@ def cadastro():
     confirmar_senha = dados.get("confirmarSenha")
 
 
-    # ------------------------------
-    # VALIDAR NOME
-    # ------------------------------
+    # ==========================================
+    # VALIDAÇÕES
+    # ==========================================
 
     if not nome or not rule.nome_valido(nome):
         return jsonify({
@@ -94,19 +140,11 @@ def cadastro():
         }), 400
 
 
-    # ------------------------------
-    # VALIDAR E-MAIL
-    # ------------------------------
-
     if not email or not rule.email_valido(email):
         return jsonify({
             "mensagem": "E-mail inválido."
         }), 400
 
-
-    # ------------------------------
-    # VALIDAR TELEFONE
-    # ------------------------------
 
     if not telefone or not rule.telefone_valido(telefone):
         return jsonify({
@@ -114,19 +152,11 @@ def cadastro():
         }), 400
 
 
-    # ------------------------------
-    # VALIDAR SENHA
-    # ------------------------------
-
     if not senha or not rule.senha_valida(senha):
         return jsonify({
             "mensagem": "Senha inválida."
         }), 400
 
-
-    # ------------------------------
-    # CONFIRMAR SENHA
-    # ------------------------------
 
     if not confirmar_senha:
         return jsonify({
@@ -140,56 +170,149 @@ def cadastro():
         }), 400
 
 
-    # ------------------------------
-    # VERIFICAR E-MAIL EXISTENTE
-    # ------------------------------
+    # ==========================================
+    # CRIAR USUÁRIO NO SUPABASE AUTH
+    # ==========================================
 
-    usuario_existente = (
-        supabase
-        .table("usuarios")
-        .select("id")
-        .eq("email", email)
-        .execute()
-    )
+    try:
 
-    if usuario_existente.data:
+        resposta_auth = supabase.auth.sign_up({
+
+            "email": email,
+
+            "password": senha,
+
+            "options": {
+
+                "data": {
+                    "nome": nome,
+                    "telefone": telefone
+                },
+
+                "email_redirect_to":
+                    "http://127.0.0.1:5000/auth/confirm"
+            }
+        })
+
+
+    except Exception as erro:
+
+        print(
+            "Erro ao criar usuário no Auth:",
+            erro
+        )
+
+        mensagem_erro = str(erro).lower()
+
+
+        if (
+            "already registered" in mensagem_erro
+            or "already exists" in mensagem_erro
+            or "user already registered" in mensagem_erro
+        ):
+
+            return jsonify({
+                "mensagem":
+                    "Este e-mail já está cadastrado."
+            }), 409
+
+
         return jsonify({
-            "mensagem": "Este e-mail já está cadastrado."
-        }), 409
+            "mensagem":
+                "Não foi possível criar a conta."
+        }), 500
 
 
-    # ------------------------------
-    # CRIAR USUÁRIO
-    # ------------------------------
+    # ==========================================
+    # VERIFICAR USUÁRIO
+    # ==========================================
+
+    if not resposta_auth.user:
+
+        return jsonify({
+            "mensagem":
+                "Não foi possível criar a conta."
+        }), 500
+
+
+    auth_id = resposta_auth.user.id
+
+
+    # ==========================================
+    # SALVAR PERFIL
+    # ==========================================
 
     novo_usuario = {
+
+        "auth_id": auth_id,
+
         "nome": nome,
+
         "email": email,
-        "senha": senha,
+
         "telefone": telefone
     }
 
 
-    resposta = (
-        supabase
-        .table("usuarios")
-        .insert(novo_usuario)
-        .execute()
-    )
+    try:
+
+        resposta_perfil = (
+
+            supabase_admin
+
+            .table("usuarios")
+
+            .insert(novo_usuario)
+
+            .execute()
+        )
 
 
-    # ------------------------------
-    # VERIFICAR CADASTRO
-    # ------------------------------
+    except Exception as erro:
 
-    if not resposta.data:
+        print(
+            "Erro ao salvar dados do usuário:",
+            erro
+        )
+
+        mensagem_erro = str(erro).lower()
+
+
+        if "duplicate key" in mensagem_erro:
+
+            return jsonify({
+                "mensagem":
+                    "Este e-mail já possui um perfil cadastrado."
+            }), 409
+
+
         return jsonify({
-            "mensagem": "Não foi possível realizar o cadastro."
+            "mensagem":
+                "Conta criada, mas não foi possível salvar os dados do perfil."
         }), 500
 
 
+    # ==========================================
+    # VERIFICAR PERFIL
+    # ==========================================
+
+    if not resposta_perfil.data:
+
+        return jsonify({
+            "mensagem":
+                "Conta criada, mas não foi possível salvar os dados do perfil."
+        }), 500
+
+
+    # ==========================================
+    # RESPOSTA
+    # ==========================================
+
     return jsonify({
-        "mensagem": "Cadastro realizado com sucesso!"
+
+        "mensagem":
+            "Conta criada! Verifique seu e-mail para confirmar a conta."
+
     }), 200
 
 
@@ -202,60 +325,264 @@ def login():
 
     dados = request.get_json()
 
+    if not dados:
+
+        return jsonify({
+            "mensagem":
+                "Nenhum dado foi enviado."
+        }), 400
+
+
     email = dados.get("email")
+
     senha = dados.get("senha")
 
 
-    # ------------------------------
-    # VALIDAR E-MAIL
-    # ------------------------------
+    # ==========================================
+    # VALIDAÇÕES
+    # ==========================================
 
     if not email or not rule.email_valido(email):
+
         return jsonify({
-            "mensagem": "E-mail inválido."
+            "mensagem":
+                "E-mail inválido."
         }), 400
 
-
-    # ------------------------------
-    # VALIDAR SENHA
-    # ------------------------------
 
     if not senha or not rule.senha_valida(senha):
+
         return jsonify({
-            "mensagem": "Senha inválida."
+            "mensagem":
+                "Senha inválida."
         }), 400
 
 
-    # ------------------------------
-    # PROCURAR USUÁRIO
-    # ------------------------------
+    # ==========================================
+    # LOGIN NO SUPABASE AUTH
+    # ==========================================
 
-    resposta = (
-        supabase
-        .table("usuarios")
-        .select("id, nome, email, telefone")
-        .eq("email", email)
-        .eq("senha", senha)
-        .execute()
-    )
+    try:
+
+        resposta_auth = (
+
+            supabase.auth.sign_in_with_password({
+
+                "email": email,
+
+                "password": senha
+            })
+        )
 
 
-    # ------------------------------
-    # VERIFICAR LOGIN
-    # ------------------------------
+    except Exception as erro:
 
-    if not resposta.data:
+        print(
+            "Erro no login:",
+            erro
+        )
+
+        mensagem_erro = str(erro).lower()
+
+
+        # ==========================================
+        # E-MAIL NÃO CONFIRMADO
+        # ==========================================
+
+        if (
+            "email not confirmed" in mensagem_erro
+            or "email_not_confirmed" in mensagem_erro
+        ):
+
+            return jsonify({
+                "mensagem":
+                    "Confirme seu e-mail antes de fazer login."
+            }), 401
+
+
         return jsonify({
-            "mensagem": "E-mail ou senha incorretos."
+            "mensagem":
+                "E-mail ou senha incorretos."
         }), 401
 
 
-    usuario = resposta.data[0]
+    # ==========================================
+    # VERIFICAR USUÁRIO
+    # ==========================================
 
+    if not resposta_auth.user:
+
+        return jsonify({
+            "mensagem":
+                "E-mail ou senha incorretos."
+        }), 401
+
+
+    auth_id = resposta_auth.user.id
+
+
+    # ==========================================
+    # BUSCAR PERFIL
+    # ==========================================
+
+    try:
+
+        resposta_perfil = (
+
+            supabase_admin
+
+            .table("usuarios")
+
+            .select(
+                "id, auth_id, nome, email, telefone"
+            )
+
+            .eq(
+                "auth_id",
+                auth_id
+            )
+
+            .execute()
+        )
+
+
+    except Exception as erro:
+
+        print(
+            "Erro ao buscar perfil:",
+            erro
+        )
+
+        return jsonify({
+            "mensagem":
+                "Não foi possível carregar os dados do usuário."
+        }), 500
+
+
+    # ==========================================
+    # VERIFICAR PERFIL
+    # ==========================================
+
+    if not resposta_perfil.data:
+
+        return jsonify({
+            "mensagem":
+                "Usuário autenticado, mas perfil não encontrado."
+        }), 404
+
+
+    usuario = resposta_perfil.data[0]
+
+
+    # ==========================================
+    # RESPOSTA
+    # ==========================================
 
     return jsonify({
-        "mensagem": "Login realizado com sucesso!",
-        "usuario": usuario
+
+        "mensagem":
+            "Login realizado com sucesso!",
+
+        "usuario":
+            usuario
+    }), 200
+
+
+# ==========================================
+# RECUPERAÇÃO DE SENHA
+# ==========================================
+
+@app.route('/api/recuperar-senha', methods=['POST'])
+def recuperar_senha():
+
+    dados = request.get_json()
+
+
+    # ==========================================
+    # VERIFICAR DADOS
+    # ==========================================
+
+    if not dados:
+
+        return jsonify({
+            "mensagem":
+                "Nenhum dado foi enviado."
+        }), 400
+
+
+    email = dados.get("email")
+
+
+    # ==========================================
+    # VALIDAR E-MAIL
+    # ==========================================
+
+    if not email or not rule.email_valido(email):
+
+        return jsonify({
+            "mensagem":
+                "Digite um e-mail válido."
+        }), 400
+
+
+    # ==========================================
+    # ENVIAR E-MAIL DE RECUPERAÇÃO
+    # ==========================================
+
+    try:
+
+        supabase.auth.reset_password_for_email(
+
+            email,
+
+            {
+                "redirect_to":
+                    "http://127.0.0.1:5000/redefinir-senha"
+            }
+        )
+
+
+    except Exception as erro:
+
+        print(
+            "Erro ao enviar recuperação:",
+            erro
+        )
+
+        mensagem_erro = str(erro).lower()
+
+
+        # ==========================================
+        # LIMITE DE ENVIO DE E-MAIL
+        # ==========================================
+
+        if "rate limit" in mensagem_erro:
+
+            return jsonify({
+                "mensagem":
+                    "Muitas tentativas de envio. Aguarde alguns minutos e tente novamente."
+            }), 429
+
+
+        # ==========================================
+        # OUTROS ERROS
+        # ==========================================
+
+        return jsonify({
+            "mensagem":
+                "Não foi possível enviar o e-mail de recuperação."
+        }), 500
+
+
+    # ==========================================
+    # RESPOSTA
+    # ==========================================
+
+    return jsonify({
+
+        "mensagem":
+            "Se esse e-mail estiver cadastrado, você receberá um link para redefinir sua senha."
+
     }), 200
 
 
@@ -264,4 +591,7 @@ def login():
 # ==========================================
 
 if __name__ == '__main__':
-    app.run(debug=True)
+
+    app.run(
+        debug=True
+    )

@@ -320,18 +320,15 @@ formCadastro.addEventListener(
 
                 mensagemCadastro.textContent =
                     resultado.mensagem ||
-                    "Cadastro realizado com sucesso!";
+                    "Cadastro realizado! Verifique seu e-mail.";
 
                 mensagemCadastro.style.display =
                     "block";
 
 
-                setTimeout(function () {
-
-                    window.location.href =
-                        "/login";
-
-                }, 1500);
+                // Não redireciona automaticamente.
+                // O usuário precisa confirmar o e-mail
+                // antes de fazer login.
 
 
                 return;

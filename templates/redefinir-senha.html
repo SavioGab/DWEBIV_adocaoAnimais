@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Redefinir senha - AdotaPet</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+</head>
+
+<body class="pagina-login">
+
+    <a
+        href="{{ url_for('pagina_login') }}"
+        class="botao-voltar"
+    >
+        ← Voltar
+    </a>
+
+
+    <main class="login-container">
+
+        <section class="login-card">
+
+            <div class="login-logo">
+                <span>🐾</span>
+                <strong>AdotaPet</strong>
+            </div>
+
+
+            <h1>Redefinir senha</h1>
+
+            <p class="login-subtitulo">
+                Digite sua nova senha abaixo.
+            </p>
+
+
+            <form id="formRedefinirSenha">
+
+
+                <!-- NOVA SENHA -->
+
+                <div class="campo-login">
+
+                    <label for="senha">
+                        Nova senha
+                    </label>
+
+                    <input
+                        type="password"
+                        id="senha"
+                        name="senha"
+                        placeholder="Digite sua nova senha"
+                        autocomplete="new-password"
+                        required
+                    >
+
+                    <small
+                        id="erro-senha"
+                        class="mensagem-erro"
+                    ></small>
+
+                </div>
+
+
+                <!-- CONFIRMAR SENHA -->
+
+                <div class="campo-login">
+
+                    <label for="confirmar-senha">
+                        Confirmar nova senha
+                    </label>
+
+                    <input
+                        type="password"
+                        id="confirmar-senha"
+                        name="confirmar-senha"
+                        placeholder="Digite a senha novamente"
+                        autocomplete="new-password"
+                        required
+                    >
+
+                    <small
+                        id="erro-confirmar-senha"
+                        class="mensagem-erro"
+                    ></small>
+
+                </div>
+
+
+                <!-- MENSAGEM -->
+
+                <div
+                    id="mensagem-redefinicao"
+                    class="mensagem-login"
+                    role="alert"
+                ></div>
+
+
+                <!-- BOTÃO -->
+
+                <button
+                    type="submit"
+                    class="botao-entrar"
+                    id="botaoRedefinir"
+                >
+                    Redefinir senha
+                </button>
+
+            </form>
+
+
+            <p class="criar-conta">
+
+                Já redefiniu sua senha?
+
+                <a href="{{ url_for('pagina_login') }}">
+                    Fazer login
+                </a>
+
+            </p>
+
+        </section>
+
+    </main>
+
+
+    <!-- Biblioteca do Supabase -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+    <!-- Nosso JavaScript -->
+
+    <script
+        src="{{ url_for('static', filename='js/redefinir-senha.js') }}"
+    ></script>
+
+</body>
+
+</html>
