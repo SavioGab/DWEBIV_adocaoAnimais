@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Recuperar senha - AdotaPet</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+</head>
+
+<body class="pagina-login">
+
+    <a
+        href="{{ url_for('pagina_login') }}"
+        class="botao-voltar"
+    >
+        ← Voltar
+    </a>
+
+
+    <main class="login-container">
+
+        <section class="login-card">
+
+            <div class="login-logo">
+                <span>🐾</span>
+                <strong>AdotaPet</strong>
+            </div>
+
+
+            <h1>Esqueceu sua senha?</h1>
+
+            <p class="login-subtitulo">
+                Digite seu e-mail e enviaremos um link
+                para você criar uma nova senha.
+            </p>
+
+
+            <form id="formRecuperarSenha">
+
+                <div class="campo-login">
+
+                    <label for="email">
+                        E-mail
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="Digite seu e-mail"
+                        autocomplete="email"
+                        required
+                    >
+
+                    <small
+                        id="erro-email"
+                        class="mensagem-erro"
+                    ></small>
+
+                </div>
+
+
+                <div
+                    id="mensagem-recuperacao"
+                    class="mensagem-login"
+                    role="alert"
+                ></div>
+
+
+                <button
+                    type="submit"
+                    class="botao-entrar"
+                    id="botaoEnviar"
+                >
+                    Enviar link
+                </button>
+
+            </form>
+
+
+            <p class="criar-conta">
+
+                Lembrou da senha?
+
+                <a href="{{ url_for('pagina_login') }}">
+                    Fazer login
+                </a>
+
+            </p>
+
+        </section>
+
+    </main>
+
+
+    <script
+        src="{{ url_for('static', filename='js/recuperar-senha.js') }}"
+    ></script>
+
+</body>
+
+</html>

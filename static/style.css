@@ -1,0 +1,1311 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f7f9f8;
+    color: #222;
+}
+
+a {
+    text-decoration: none;
+}
+
+
+/* =========================
+   CABEÇALHO
+========================= */
+
+header {
+    height: 70px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 50px;
+
+    background-color: white;
+
+    border-bottom: 1px solid #e5e5e5;
+}
+
+header h1 {
+    font-size: 22px;
+    color: #222;
+}
+
+nav {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+}
+
+nav a {
+    color: #333;
+    font-size: 14px;
+}
+
+nav a:hover {
+    color: #3b9275;
+}
+
+.area-usuario {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+
+/* =========================
+   CONTEÚDO PRINCIPAL
+========================= */
+
+main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 30px 40px;
+}
+
+
+/* =========================
+   ÁREA PRINCIPAL
+========================= */
+
+.hero {
+    background-color: #e8f5f0;
+
+    padding: 45px;
+
+    border-radius: 12px;
+}
+
+.hero h2 {
+    font-size: 38px;
+    max-width: 500px;
+    margin-bottom: 15px;
+}
+
+.hero p {
+    font-size: 17px;
+    max-width: 550px;
+    line-height: 1.5;
+    margin-bottom: 25px;
+}
+
+
+/* =========================
+   BUSCA
+========================= */
+
+.busca {
+    display: flex;
+    max-width: 700px;
+}
+
+.busca input {
+    flex: 1;
+
+    padding: 14px 18px;
+
+    border: 1px solid #ddd;
+    border-radius: 25px 0 0 25px;
+
+    font-size: 14px;
+}
+
+.busca button {
+    padding: 14px 30px;
+
+    border: none;
+    border-radius: 0 25px 25px 0;
+
+    background-color: #3b9275;
+    color: white;
+
+    font-size: 14px;
+
+    cursor: pointer;
+}
+
+.busca button:hover {
+    background-color: #327c63;
+}
+
+
+/* =========================
+   BOTÕES DE AÇÃO
+========================= */
+
+.acoes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+
+    gap: 15px;
+
+    margin-top: 18px;
+}
+
+.acoes a {
+    padding: 18px;
+
+    text-align: center;
+
+    border-radius: 10px;
+
+    font-weight: bold;
+}
+
+.acoes a:first-child {
+    background-color: #ffdce5;
+    color: #b6244b;
+}
+
+.acoes a:last-child {
+    background-color: #dcefe8;
+    color: #28735a;
+}
+.botao-cadastro {
+    background-color: #3b9275;
+    color: white;
+    padding: 10px 18px;
+    border-radius: 6px;
+}
+
+
+/* =========================
+   ANIMAIS EM DESTAQUE
+========================= */
+
+.destaques {
+    margin-top: 35px;
+}
+
+.titulo-destaques {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 18px;
+}
+
+.titulo-destaques h2 {
+    font-size: 22px;
+}
+
+.titulo-destaques a {
+    color: #28735a;
+    font-size: 14px;
+}
+
+
+/* =========================
+   CARDS DOS ANIMAIS
+========================= */
+
+.animais {
+    display: grid;
+
+    grid-template-columns: repeat(4, 1fr);
+
+    gap: 15px;
+}
+
+.animal-card {
+    background-color: white;
+    border: 1px solid #e5e5e5;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.animal-imagem {
+    width: 100%;
+    height: 230px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background-color: #e9eeee;
+
+    overflow: hidden;
+}
+
+.animal-imagem img {
+    width: auto;
+    height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+.animal-card h3 {
+    font-size: 16px;
+    margin: 12px 12px 5px;
+    color: #222;
+}
+
+.animal-card p {
+    font-size: 13px;
+    color: #666;
+    margin: 0 12px 15px;
+}
+
+/* =========================
+   RESPONSIVIDADE
+========================= */
+
+@media (max-width: 800px) {
+
+    header {
+        padding: 0 20px;
+    }
+
+    nav {
+        gap: 12px;
+    }
+
+    main {
+        padding: 20px;
+    }
+
+    .hero {
+        padding: 30px 20px;
+    }
+
+    .hero h2 {
+        font-size: 30px;
+    }
+
+    .animais {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+
+@media (max-width: 500px) {
+
+    header {
+        height: auto;
+        padding: 20px;
+
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    nav {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .acoes {
+        grid-template-columns: 1fr;
+    }
+
+    .animais {
+        grid-template-columns: 1fr;
+    }
+
+    .busca {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .busca input,
+    .busca button {
+        border-radius: 25px;
+    }
+}
+
+
+/* =========================
+   LOGIN
+========================= */
+
+.pagina-login {
+    margin: 0;
+    background-color: #edf3f1;
+}
+
+
+/* Área do login */
+
+.login-container {
+    min-height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 30px;
+}
+
+
+/* Card branco */
+
+.login-card {
+    width: 100%;
+    max-width: 430px;
+    min-height: 520px;
+
+    background-color: #ffffff;
+
+    border-radius: 12px;
+
+    padding: 45px 45px 35px;
+
+    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.10);
+}
+
+
+/* Logo */
+
+.login-logo {
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    gap: 10px;
+
+    margin-bottom: 35px;
+}
+
+.login-logo span {
+    font-size: 38px;
+}
+
+.login-logo strong {
+    font-size: 24px;
+
+    color: #171717;
+}
+
+
+/* Título */
+
+.login-card h1 {
+    font-size: 25px;
+
+    text-align: center;
+
+    margin: 0 0 8px;
+
+    color: #111;
+}
+
+.login-subtitulo {
+    font-size: 14px;
+
+    text-align: center;
+
+    color: #555;
+
+    margin: 0 0 32px;
+}
+
+
+/* Campos */
+
+.campo-login {
+    margin-bottom: 20px;
+}
+
+.campo-login label {
+    display: block;
+
+    font-size: 14px;
+
+    margin-bottom: 7px;
+
+    color: #222;
+}
+
+.campo-login input {
+    width: 100%;
+
+    height: 45px;
+
+    padding: 0 13px;
+
+    border: 1px solid #cfcfcf;
+
+    border-radius: 6px;
+
+    font-size: 14px;
+
+    color: #333;
+
+    outline: none;
+
+    box-sizing: border-box;
+}
+
+.campo-login input:focus {
+    border-color: #3b9275;
+}
+
+
+/* Campo da senha */
+
+.senha-container {
+    position: relative;
+}
+
+.senha-container input {
+    padding-right: 40px;
+}
+
+.olho {
+    position: absolute;
+
+    right: 13px;
+
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    font-size: 16px;
+
+    color: #333;
+
+    cursor: pointer;
+}
+
+
+/* Botão */
+
+.botao-entrar {
+    
+    width: 100%;
+
+    height: 45px;
+
+    margin-top: 10px;
+
+    border: none;
+
+    border-radius: 6px;
+
+    background-color: #3b9275;
+
+    color: white;
+
+    font-size: 15px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+.botao-entrar:hover {
+    background-color: #327c63;
+}
+
+
+/* Esqueci minha senha */
+
+.esqueci-senha {
+    display: block;
+
+    text-align: center;
+
+    margin-top: 20px;
+
+    color: #285d4d;
+
+    font-size: 13px;
+
+    text-decoration: underline;
+}
+
+
+/* Criar conta */
+
+.criar-conta {
+    text-align: center;
+
+    margin-top: 55px;
+
+    font-size: 13px;
+
+    color: #222;
+}
+
+.criar-conta a {
+    color: #285d4d;
+
+    font-weight: bold;
+
+    text-decoration: underline;
+}
+
+
+.login-container {
+    min-height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: clamp(20px, 5vw, 50px);
+}
+
+.login-card {
+    width: min(100%, 430px);
+
+    padding: clamp(25px, 5vw, 45px);
+
+    background-color: white;
+    border-radius: 12px;
+
+    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.10);
+}
+
+.login-card h1 {
+    font-size: clamp(22px, 2.5vw, 25px);
+}
+
+.campo-login input {
+    width: 100%;
+    height: clamp(42px, 4vw, 48px);
+}
+
+/* boatao perfil*/
+.area-usuario {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+#botao-perfil {
+    color: #333;
+    text-decoration: none;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+#botao-perfil:hover {
+    color: #3b9275;
+}s
+
+/* =========================
+   CADASTRO
+========================= */
+
+.cadastro-card {
+    max-width: 480px;
+}
+
+.cadastro-card .login-logo {
+    margin-bottom: 28px;
+}
+
+.cadastro-card .login-subtitulo {
+    margin-bottom: 25px;
+}
+
+.cadastro-card .campo-login {
+    margin-bottom: 16px;
+}
+
+.cadastro-card .botao-entrar {
+    margin-top: 8px;
+}
+
+.cadastro-card .criar-conta {
+    margin-top: 25px;
+}
+
+.olho {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+
+    border: none;
+    background: transparent;
+
+    font-size: 16px;
+    cursor: pointer;
+
+    padding: 5px;
+}
+
+
+
+
+/* Responsividade */
+
+@media (max-width: 500px) {
+
+    .cadastro-card {
+        max-width: 100%;
+    }
+
+}
+
+.botao-voltar {
+    position: absolute;
+    top: 25px;
+    left: 30px;
+
+    display: inline-block;
+
+    padding: 9px 16px;
+
+    background-color: white;
+    color: #2f5d50;
+
+    border-radius: 10px;
+
+    text-decoration: none;
+
+    font-size: 16px;
+    font-weight: 600;
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+    transition: 0.2s;
+}
+
+.botao-voltar:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+}
+
+@media (max-width: 500px) {
+
+    .botao-voltar {
+        top: 15px;
+        left: 18px;
+
+        padding: 8px 13px;
+
+        font-size: 15px;
+    }
+
+}
+
+/* =========================================
+   TELA DE ANIMAIS
+========================================= */
+
+.pagina-animais {
+    margin: 0;
+    background: #edf3f1;
+    min-height: 100vh;
+}
+
+
+/* =========================================
+   CABEÇALHO
+========================================= */
+
+.cabecalho-animais {
+    width: 100%;
+    min-height: 70px;
+
+    background: white;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 40px;
+
+    box-sizing: border-box;
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+
+.logo-adotapet {
+    color: #2f5d50;
+
+    font-size: 24px;
+    font-weight: bold;
+
+    text-decoration: none;
+}
+
+
+.botao-doar {
+    background: #2f5d50;
+    color: white;
+
+    padding: 11px 18px;
+
+    border-radius: 10px;
+
+    text-decoration: none;
+
+    font-weight: 600;
+
+    transition: 0.2s;
+}
+
+
+.botao-doar:hover {
+    transform: translateY(-1px);
+}
+
+
+/* =========================================
+   CONTEÚDO
+========================================= */
+
+.conteudo-animais {
+    width: min(1200px, 92%);
+
+    margin: 0 auto;
+
+    padding: 45px 0;
+}
+
+
+.introducao-animais {
+    text-align: center;
+
+    margin-bottom: 30px;
+}
+
+
+.introducao-animais h1 {
+    margin-bottom: 8px;
+
+    color: #2f5d50;
+
+    font-size: clamp(25px, 4vw, 36px);
+}
+
+
+.introducao-animais p {
+    margin: 0;
+
+    color: #666;
+
+    font-size: 16px;
+}
+
+
+/* =========================================
+   FILTROS
+========================================= */
+
+.filtros-animais {
+    display: flex;
+
+    gap: 15px;
+
+    margin-bottom: 30px;
+
+    background: white;
+
+    padding: 20px;
+
+    border-radius: 14px;
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+
+.campo-pesquisa,
+.campo-filtro {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 7px;
+}
+
+
+.campo-pesquisa {
+    flex: 1;
+}
+
+
+.campo-filtro {
+    width: 220px;
+}
+
+
+.campo-pesquisa label,
+.campo-filtro label {
+    font-size: 14px;
+
+    font-weight: 600;
+
+    color: #333;
+}
+
+
+.campo-pesquisa input,
+.campo-filtro select {
+    height: 43px;
+
+    border: 1px solid #d5d5d5;
+
+    border-radius: 8px;
+
+    padding: 0 12px;
+
+    font-size: 15px;
+
+    box-sizing: border-box;
+
+    outline: none;
+}
+
+
+.campo-pesquisa input:focus,
+.campo-filtro select:focus {
+    border-color: #2f5d50;
+}
+
+
+/* =========================================
+   LISTA DE CARDS
+========================================= */
+
+.lista-animais {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 25px;
+}
+
+
+/* =========================================
+   CARD
+========================================= */
+
+.card-animal {
+    background: white;
+
+    border-radius: 15px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 3px 12px rgba(0, 0, 0, 0.08);
+
+    transition: 0.2s;
+}
+
+
+.card-animal:hover {
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+
+.imagem-animal {
+    width: 100%;
+
+    height: 220px;
+
+    object-fit: cover;
+
+    display: block;
+}
+
+
+.informacoes-animal {
+    padding: 20px;
+}
+
+
+.informacoes-animal h2 {
+    margin: 0 0 12px;
+
+    color: #2f5d50;
+
+    font-size: 23px;
+}
+
+
+.informacoes-animal p {
+    margin: 7px 0;
+
+    color: #555;
+
+    font-size: 14px;
+}
+
+
+/* =========================================
+   STATUS
+========================================= */
+
+.status-disponivel {
+    display: inline-block;
+
+    margin-top: 8px;
+
+    padding: 5px 9px;
+
+    border-radius: 20px;
+
+    background: #e5f3ec;
+
+    color: #2f5d50;
+
+    font-size: 12px;
+
+    font-weight: 600;
+}
+
+
+/* =========================================
+   BOTÃO ADOTAR
+========================================= */
+
+.botao-adotar {
+    width: 100%;
+
+    margin-top: 17px;
+
+    padding: 11px;
+
+    border: none;
+
+    border-radius: 9px;
+
+    background: #2f5d50;
+
+    color: white;
+
+    font-size: 15px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+
+.botao-adotar:hover {
+    opacity: 0.9;
+}
+
+
+.botao-adotar:disabled {
+    opacity: 0.6;
+
+    cursor: not-allowed;
+}
+
+
+/* =========================================
+   MENSAGENS
+========================================= */
+
+.mensagem-animais {
+    text-align: center;
+
+    padding: 25px;
+
+    color: #666;
+
+    font-size: 16px;
+}
+
+
+.mensagem-erro-animais {
+    color: #b42318;
+
+    background: #fff0ef;
+
+    border-radius: 10px;
+}
+
+
+/* =========================================
+   RESPONSIVIDADE
+========================================= */
+
+@media (max-width: 800px) {
+
+    .lista-animais {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+    .filtros-animais {
+        flex-direction: column;
+    }
+
+    .campo-filtro {
+        width: 100%;
+    }
+
+}
+
+
+@media (max-width: 550px) {
+
+    .cabecalho-animais {
+        padding: 15px 18px;
+
+        flex-direction: column;
+
+        gap: 12px;
+    }
+
+
+    .logo-adotapet {
+        font-size: 21px;
+    }
+
+
+    .botao-doar {
+        width: 100%;
+
+        text-align: center;
+
+        box-sizing: border-box;
+    }
+
+
+    .conteudo-animais {
+        padding: 30px 0;
+    }
+
+
+    .lista-animais {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* =========================================
+   PAINEL DO PERFIL
+========================================= */
+
+.fundo-perfil {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.25);
+    z-index: 1000;
+    display: none;
+    
+}
+
+.painel-perfil {
+    position: absolute;
+    top: 0;
+    right: 0;
+
+    width: 360px;
+    max-width: 90%;
+    height: 100%;
+
+    background-color: white;
+
+    padding: 30px;
+
+    box-sizing: border-box;
+
+    box-shadow: -5px 0 20px rgba(0, 0, 0, 0.12);
+}
+
+.cabecalho-perfil {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 30px;
+}
+
+.cabecalho-perfil h2 {
+    margin: 0;
+    color: #2f5d50;
+}
+
+#fechar-perfil {
+    border: none;
+    background: none;
+
+    font-size: 30px;
+    color: #555;
+
+    cursor: pointer;
+}
+
+#fechar-perfil:hover {
+    color: #2f5d50;
+}
+
+
+/* INFORMAÇÕES PESSOAIS */
+
+.informacoes-perfil {
+    border-bottom: 1px solid #e5e5e5;
+    padding-bottom: 20px;
+}
+
+.informacoes-perfil h3,
+.opcao-perfil h3 {
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.informacoes-perfil p {
+    margin: 10px 0;
+    color: #555;
+    font-size: 14px;
+}
+
+.informacoes-perfil strong {
+    color: #333;
+}
+
+
+/* OUTRAS OPÇÕES */
+
+.opcao-perfil {
+    padding: 18px 0;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.opcao-perfil h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: normal;
+}
+
+
+/* DESLOGAR */
+
+.area-deslogar {
+    margin-top: 30px;
+}
+
+#botao-deslogar {
+    width: 100%;
+
+    padding: 13px;
+
+    border: none;
+    border-radius: 7px;
+
+    background-color: #fff0ef;
+    color: #b42318;
+
+    font-size: 15px;
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+#botao-deslogar:hover {
+    background-color: #ffe1df;
+}
+
+
+/* =========================================
+   CONFIRMAÇÃO
+========================================= */
+
+.fundo-confirmacao {
+    position: fixed;
+    inset: 0;
+
+    display: none;
+
+    align-items: center;
+    justify-content: center;
+
+    background-color: rgba(0, 0, 0, 0.35);
+
+    z-index: 2000;
+}
+
+.caixa-confirmacao {
+    width: 90%;
+    max-width: 400px;
+
+    background-color: white;
+
+    border-radius: 12px;
+
+    padding: 30px;
+
+    text-align: center;
+
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.15);
+}
+
+.caixa-confirmacao h2 {
+    margin-top: 0;
+    color: #222;
+}
+
+.caixa-confirmacao p {
+    color: #666;
+    margin-bottom: 25px;
+}
+
+.botoes-confirmacao {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
+.botoes-confirmacao button {
+    padding: 10px 18px;
+
+    border-radius: 7px;
+
+    cursor: pointer;
+
+    font-weight: bold;
+}
+
+#botao-cancelar {
+    border: 1px solid #ddd;
+    background-color: white;
+    color: #444;
+}
+
+#botao-confirmar {
+    border: none;
+    background-color: #b42318;
+    color: white;
+}
+
+/* ==========================================
+   RECUPERAR SENHA
+   ========================================== */
+
+.pagina-login .login-subtitulo {
+    margin-bottom: 25px;
+}
+
+
+#mensagem-recuperacao {
+    margin-top: 15px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+
+#botaoEnviar:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+
+.pagina-login .criar-conta {
+    margin-top: 25px;
+}

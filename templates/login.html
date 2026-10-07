@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Login - AdotaPet</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body class="pagina-login">
+
+    <a href="{{ url_for('home') }}" class="botao-voltar">
+        ← Voltar
+    </a>
+
+    <main class="login-container">
+
+        <section class="login-card">
+
+            <!-- Logo -->
+            <div class="login-logo">
+                <span>🐾</span>
+                <strong>AdotaPet</strong>
+            </div>
+
+            <h1>Bem-vindo de volta!</h1>
+
+            <p class="login-subtitulo">
+                Entre na sua conta para continuar
+            </p>
+
+
+            <!-- Formulário -->
+            <form id="formLogin">
+
+                <!-- E-mail -->
+                <div class="campo-login">
+
+                    <label for="email">
+                        E-mail
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="Digite seu e-mail"
+                        autocomplete="email"
+                        required
+                    >
+
+                    <small
+                        id="erro-email"
+                        class="mensagem-erro">
+                    </small>
+
+                </div>
+
+
+                <!-- Senha -->
+                <div class="campo-login">
+
+                    <label for="senha">
+                        Senha
+                    </label>
+
+                    <div class="senha-container">
+
+                        <input
+                            type="password"
+                            id="senha"
+                            name="senha"
+                            placeholder="Digite sua senha"
+                            autocomplete="current-password"
+                            required
+                        >
+
+                        <button
+                            type="button"
+                            class="olho"
+                            id="botaoSenha"
+                            aria-label="Mostrar senha"
+                        >
+                            👁
+                        </button>
+
+                    </div>
+
+                    <small
+                        id="erro-senha"
+                        class="mensagem-erro">
+                    </small>
+
+                </div>
+
+
+                <!-- Esqueci a senha -->
+                <a href="{{ url_for('pagina_recuperar_senha') }}" class="esqueci-senha">
+                    Esqueci minha senha
+                </a>
+
+
+                <!-- Mensagem geral -->
+                <div
+                    id="mensagem-login"
+                    class="mensagem-login"
+                    role="alert">
+                </div>
+
+
+                <!-- Botão -->
+                <button
+                    type="submit"
+                    class="botao-entrar"
+                    id="botaoEntrar"
+                >
+                    Entrar
+                </button>
+
+            </form>
+
+
+            <!-- Cadastro -->
+            <p class="criar-conta">
+
+                Ainda não possui uma conta?
+
+                <a href="{{ url_for('pagina_cadastro') }}">
+                    Criar conta
+                </a>
+
+            </p>
+
+        </section>
+
+    </main>
+
+
+    <!-- JavaScript -->
+    <script src="{{ url_for('static', filename='js/login.js') }}"></script>
+
+</body>
+
+</html>

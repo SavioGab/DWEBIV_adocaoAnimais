@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Confirmação de e-mail</title>
+</head>
+
+<body>
+
+    <h1 id="titulo">Confirmando seu e-mail...</h1>
+
+    <p id="mensagem">
+        Aguarde um momento.
+    </p>
+
+    <a
+        id="botaoLogin"
+        href="/login"
+        style="display: none;"
+    >
+        Ir para o login
+    </a>
+
+
+    <script>
+        const titulo = document.getElementById("titulo");
+        const mensagem = document.getElementById("mensagem");
+        const botaoLogin = document.getElementById("botaoLogin");
+
+
+        // Pega tudo que está depois do #
+        const hash = window.location.hash;
+
+
+        // Transforma:
+        // #access_token=123&type=signup
+        //
+        // em um objeto que conseguimos acessar
+        const parametros = new URLSearchParams(
+            hash.substring(1)
+        );
+
+
+        const accessToken =
+            parametros.get("access_token");
+
+        const refreshToken =
+            parametros.get("refresh_token");
+
+        const tipo =
+            parametros.get("type");
+
+
+        // Verifica se recebemos os tokens
+        if (
+            !accessToken ||
+            !refreshToken
+        ) {
+
+            titulo.textContent =
+                "Erro na confirmação";
+
+            mensagem.textContent =
+                "Não foi possível encontrar os dados da confirmação.";
+
+        } else {
+
+            // O Supabase já confirmou o e-mail.
+            // Aqui apenas salvamos a sessão.
+
+            localStorage.setItem(
+                "access_token",
+                accessToken
+            );
+
+            localStorage.setItem(
+                "refresh_token",
+                refreshToken
+            );
+
+
+            titulo.textContent =
+                "E-mail confirmado!";
+
+            mensagem.textContent =
+                "Seu e-mail foi confirmado com sucesso.";
+
+            botaoLogin.style.display =
+                "inline-block";
+        }
+    </script>
+
+</body>
+
+</html>
