@@ -12,6 +12,10 @@
 
 <body>
 
+    <!-- ==========================================
+         CABEÇALHO
+    =========================================== -->
+
     <header>
 
         <h1>🐾 AdotaPet</h1>
@@ -26,27 +30,43 @@
                 Como funciona
             </a>
 
-            <a href="{{ url_for('pagina_login') }}">
-                Entrar
-            </a>
+            <div class="area-usuario">
 
-            <a
-                href="{{ url_for('pagina_cadastro') }}"
-                class="botao-cadastro"
-            >
-                Criar conta
-            </a>
+                <a
+                    href="{{ url_for('pagina_login') }}"
+                    id="botao-entrar"
+                >
+                    Entrar
+                </a>
+
+                <a
+                    href="{{ url_for('pagina_cadastro') }}"
+                    class="botao-cadastro"
+                    id="botao-cadastro"
+                >
+                    Criar conta
+                </a>
+
+                <a href="#" 
+                id="botao-perfil"
+                 aria-label="Abrir perfil" 
+                 style="display: none;" 
+                 onclick="abrirPerfil(event)">Perfil</a>
+
+            </div>
 
         </nav>
 
     </header>
 
 
+    <!-- ==========================================
+         CONTEÚDO PRINCIPAL
+    =========================================== -->
+
     <main>
 
-        <!-- ==========================================
-             APRESENTAÇÃO
-        =========================================== -->
+        <!-- APRESENTAÇÃO -->
 
         <section class="hero">
 
@@ -66,7 +86,7 @@
                     placeholder="Procure por animal, raça ou cidade..."
                 >
 
-                <button>
+                <button type="button">
                     Buscar
                 </button>
 
@@ -75,9 +95,7 @@
         </section>
 
 
-        <!-- ==========================================
-             AÇÕES PRINCIPAIS
-        =========================================== -->
+        <!-- AÇÕES PRINCIPAIS -->
 
         <section class="acoes">
 
@@ -92,9 +110,7 @@
         </section>
 
 
-        <!-- ==========================================
-             ANIMAIS EM DESTAQUE
-        =========================================== -->
+        <!-- ANIMAIS EM DESTAQUE -->
 
         <section class="destaques">
 
@@ -112,7 +128,6 @@
 
 
             <div class="animais">
-
 
                 <!-- THOR -->
 
@@ -209,12 +224,411 @@
 
                 </article>
 
-
             </div>
 
         </section>
 
     </main>
+
+
+    <!-- ==========================================
+         PAINEL LATERAL DO PERFIL
+    =========================================== -->
+
+    <div
+        id="fundo-perfil"
+        class="fundo-perfil"
+    >
+
+        <aside
+            id="painel-perfil"
+            class="painel-perfil"
+        >
+
+            <div class="cabecalho-perfil">
+
+                <h2>
+                    Meu perfil
+                </h2>
+
+                <button
+                    type="button"
+                    id="fechar-perfil"
+                    aria-label="Fechar perfil"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <!-- INFORMAÇÕES PESSOAIS -->
+
+            <section class="informacoes-perfil">
+
+                <h3>
+                    Informações pessoais
+                </h3>
+
+                <p>
+                    <strong>Nome:</strong>
+                    <span id="perfil-nome"></span>
+                </p>
+
+                <p>
+                    <strong>E-mail:</strong>
+                    <span id="perfil-email"></span>
+                </p>
+
+                <p>
+                    <strong>Telefone:</strong>
+                    <span id="perfil-telefone"></span>
+                </p>
+
+            </section>
+
+
+            <!-- MEUS PETS -->
+
+            <section class="opcao-perfil">
+
+                <h3>
+                    Meus pets anunciados
+                </h3>
+
+            </section>
+
+
+            <!-- SOLICITAÇÕES -->
+
+            <section class="opcao-perfil">
+
+                <h3>
+                    Solicitações de adoção
+                </h3>
+
+            </section>
+
+
+            <!-- DESLOGAR -->
+
+            <div class="area-deslogar">
+
+                <button
+                    type="button"
+                    id="botao-deslogar"
+                >
+                    Deslogar
+                </button>
+
+            </div>
+
+        </aside>
+
+    </div>
+
+
+    <!-- ==========================================
+         CONFIRMAÇÃO DE DESLOGAR
+    =========================================== -->
+
+    <div
+        id="fundo-confirmacao"
+        class="fundo-confirmacao"
+    >
+
+        <div class="caixa-confirmacao">
+
+            <h2>
+                Tem certeza?
+            </h2>
+
+            <p>
+                Você realmente deseja sair da sua conta?
+            </p>
+
+            <div class="botoes-confirmacao">
+
+                <button
+                    type="button"
+                    id="botao-cancelar"
+                >
+                    Cancelar
+                </button>
+
+                <button
+                    type="button"
+                    id="botao-confirmar"
+                >
+                    Sim, deslogar
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==========================================
+         JAVASCRIPT
+    =========================================== -->
+
+    <script>
+
+        // ==========================================
+        // USUÁRIO LOGADO
+        // ==========================================
+
+        const usuarioSalvo =
+            sessionStorage.getItem("usuario");
+
+
+        // ==========================================
+        // BOTÕES DO CABEÇALHO
+        // ==========================================
+
+        const botaoEntrar =
+            document.getElementById("botao-entrar");
+
+        const botaoCadastro =
+            document.getElementById("botao-cadastro");
+
+        const botaoPerfil =
+            document.getElementById("botao-perfil");
+
+
+        // ==========================================
+        // PAINEL DO PERFIL
+        // ==========================================
+
+        const fundoPerfil =
+            document.getElementById("fundo-perfil");
+
+        const fecharPerfil =
+            document.getElementById("fechar-perfil");
+
+
+        // ==========================================
+        // DADOS DO USUÁRIO
+        // ==========================================
+
+        const perfilNome =
+            document.getElementById("perfil-nome");
+
+        const perfilEmail =
+            document.getElementById("perfil-email");
+
+        const perfilTelefone =
+            document.getElementById("perfil-telefone");
+
+
+        // ==========================================
+        // LOGOUT
+        // ==========================================
+
+        const botaoDeslogar =
+            document.getElementById("botao-deslogar");
+
+        const fundoConfirmacao =
+            document.getElementById("fundo-confirmacao");
+
+        const botaoCancelar =
+            document.getElementById("botao-cancelar");
+
+        const botaoConfirmar =
+            document.getElementById("botao-confirmar");
+
+
+        // ==========================================
+        // VERIFICAR SE ESTÁ LOGADO
+        // ==========================================
+
+        if (usuarioSalvo) {
+
+            try {
+
+                const usuario =
+                    JSON.parse(usuarioSalvo);
+
+
+                // Esconder Entrar e Criar conta
+
+                botaoEntrar.style.display = "none";
+
+                botaoCadastro.style.display = "none";
+
+
+                // Mostrar Perfil
+
+                botaoPerfil.style.display = "inline-flex";
+
+
+                // Mostrar informações do usuário
+
+                perfilNome.textContent =
+                    usuario.nome || "Não informado";
+
+                perfilEmail.textContent =
+                    usuario.email || "Não informado";
+
+                perfilTelefone.textContent =
+                    usuario.telefone || "Não informado";
+
+
+            } catch (erro) {
+
+                console.error(
+                    "Erro ao carregar usuário:",
+                    erro
+                );
+
+            }
+
+        }
+
+
+        // ==========================================
+// ABRIR PERFIL
+// ==========================================
+
+botaoPerfil.addEventListener("click", function (event) {
+
+    event.preventDefault();
+
+    fundoPerfil.style.setProperty(
+        "display",
+        "block",
+        "important"
+    );
+
+});
+
+
+        // ==========================================
+        // FECHAR PERFIL
+        // ==========================================
+
+       fecharPerfil.addEventListener("click", function () {
+
+    fundoPerfil.style.setProperty(
+        "display",
+        "none",
+        "important"
+    );
+
+});
+
+
+        // ==========================================
+        // CLICAR FORA DO PAINEL
+        // ==========================================
+
+        fundoPerfil.addEventListener("click", function (event) {
+
+    if (event.target === fundoPerfil) {
+
+        fundoPerfil.style.setProperty(
+            "display",
+            "none",
+            "important"
+        );
+
+    }
+
+});
+
+        // ==========================================
+        // ABRIR CONFIRMAÇÃO DE LOGOUT
+        // ==========================================
+
+        botaoDeslogar.addEventListener(
+            "click",
+            function () {
+
+                fundoConfirmacao.style.display =
+                    "flex";
+
+            }
+        );
+
+
+        // ==========================================
+        // CANCELAR LOGOUT
+        // ==========================================
+
+        botaoCancelar.addEventListener(
+            "click",
+            function () {
+
+                fundoConfirmacao.style.display =
+                    "none";
+
+            }
+        );
+
+
+        // ==========================================
+        // CONFIRMAR LOGOUT
+        // ==========================================
+
+        botaoConfirmar.addEventListener(
+            "click",
+            function () {
+
+                sessionStorage.removeItem(
+                    "usuario"
+                );
+
+                window.location.href = "/";
+
+            }
+        );
+
+    </script>
+
+<script>
+function abrirPerfil(event) {
+    event.preventDefault();
+
+    const fundoPerfil = document.getElementById("fundo-perfil");
+
+    if (!fundoPerfil) {
+        alert("Erro: o elemento fundo-perfil não foi encontrado.");
+        return;
+    }
+
+    fundoPerfil.style.display = "flex";
+}
+
+function fecharPerfil() {
+    const fundoPerfil = document.getElementById("fundo-perfil");
+
+    if (fundoPerfil) {
+        fundoPerfil.style.display = "none";
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const fechar = document.getElementById("fechar-perfil");
+    const fundo = document.getElementById("fundo-perfil");
+
+    if (fechar) {
+        fechar.addEventListener("click", fecharPerfil);
+    }
+
+    if (fundo) {
+        fundo.addEventListener("click", function (event) {
+            if (event.target === fundo) {
+                fecharPerfil();
+            }
+        });
+    }
+
+});
+</script>
+
 
 </body>
 

@@ -136,7 +136,7 @@ formCadastro.addEventListener(
         if (!nomeValido) {
 
             erroNome.textContent =
-                "Digite pelo menos dois nomes, com no mínimo 3 letras.";
+                "Digite seu nome completo.";
 
             erroNome.style.display = "block";
 
