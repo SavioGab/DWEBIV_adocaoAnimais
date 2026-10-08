@@ -18,6 +18,7 @@ function limparMensagens() {
 
     erroEmail.textContent = "";
     mensagemRecuperacao.textContent = "";
+    mensagemRecuperacao.classList.remove("sucesso");
 
     erroEmail.style.display = "none";
     mensagemRecuperacao.style.display = "none";
@@ -106,6 +107,8 @@ formRecuperarSenha.addEventListener(
 
                 mensagemRecuperacao.textContent =
                     "Link enviado! Verifique seu e-mail para redefinir sua senha.";
+
+                mensagemRecuperacao.classList.add("sucesso");
 
                 mensagemRecuperacao.style.display =
                     "block";

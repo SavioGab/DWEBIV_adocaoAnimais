@@ -189,16 +189,8 @@ formLogin.addEventListener("submit", async function (event) {
 
         if (resposta.ok) {
 
-            if (resultado.usuario) {
-
-                sessionStorage.setItem(
-                    "usuario",
-                    JSON.stringify(resultado.usuario)
-                );
-
-            }
-
-
+            // A sessão fica num cookie criado pelo servidor.
+            // Nada precisa ser guardado no navegador.
             window.location.href = "/";
 
             return;

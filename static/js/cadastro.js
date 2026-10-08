@@ -92,6 +92,7 @@ function limparMensagens() {
     erroSenha.textContent = "";
     erroConfirmarSenha.textContent = "";
     mensagemCadastro.textContent = "";
+    mensagemCadastro.classList.remove("sucesso");
 
     erroNome.style.display = "none";
     erroEmail.style.display = "none";
@@ -129,7 +130,8 @@ formCadastro.addEventListener(
             nomes[nomes.length - 1].length >= 3 &&
             nomes.every(
                 nomeAtual =>
-                    /^[A-Za-zÀ-ÿ]+$/.test(nomeAtual)
+                    /^[A-Za-zÀ-ÖØ-öø-ÿ]+(?:[-'][A-Za-zÀ-ÖØ-öø-ÿ]+)*$/
+                        .test(nomeAtual)
             );
 
 
@@ -205,6 +207,19 @@ formCadastro.addEventListener(
 
             erroSenha.textContent =
                 "Digite uma senha.";
+
+            erroSenha.style.display = "block";
+
+            senha.focus();
+
+            return;
+        }
+
+
+        if (senha.value.length < 6) {
+
+            erroSenha.textContent =
+                "A senha deve ter pelo menos 6 caracteres.";
 
             erroSenha.style.display = "block";
 
@@ -322,8 +337,12 @@ formCadastro.addEventListener(
                     resultado.mensagem ||
                     "Cadastro realizado! Verifique seu e-mail.";
 
+                mensagemCadastro.classList.add("sucesso");
+
                 mensagemCadastro.style.display =
                     "block";
+
+                formCadastro.reset();
 
 
                 // Não redireciona automaticamente.

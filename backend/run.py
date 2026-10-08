@@ -1,8 +1,19 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, session
 import rule
 import os
+import secrets
 
 from supabase import create_client, Client
+
+# O nome da classe de opções mudou entre versões do supabase-py
+try:
+    from supabase import ClientOptions
+except ImportError:
+    try:
+        from supabase.client import ClientOptions
+    except ImportError:
+        from supabase import SyncClientOptions as ClientOptions
+
 from dotenv import load_dotenv
 
 
@@ -11,11 +22,25 @@ from dotenv import load_dotenv
 # ==========================================
 
 caminho_env = os.path.join(
-    os.path.dirname(os.path.dirname(__file__)),
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
     ".env"
 )
 
 load_dotenv(caminho_env)
+
+
+def variavel_obrigatoria(nome):
+
+    valor = os.getenv(nome)
+
+    if not valor:
+        raise RuntimeError(
+            f"A variável {nome} não foi encontrada. "
+            f"Crie o arquivo .env na raiz do projeto "
+            f"(use o .env.example como modelo)."
+        )
+
+    return valor
 
 
 # ==========================================
@@ -29,26 +54,64 @@ app = Flask(
 )
 
 
+# Chave usada para assinar o cookie de sessão (login).
+# Se não existir no .env, uma chave temporária é criada
+# (o login é perdido sempre que o servidor reiniciar).
+app.secret_key = os.getenv("SECRET_KEY")
+
+if not app.secret_key:
+    print(
+        "AVISO: SECRET_KEY não definida no .env. "
+        "Usando chave temporária."
+    )
+    app.secret_key = secrets.token_hex(32)
+
+app.config["SESSION_COOKIE_HTTPONLY"] = True
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+
+
 # ==========================================
 # CONEXÃO COM SUPABASE
 # ==========================================
 
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_PUBLISHABLE_KEY = os.getenv("SUPABASE_PUBLISHABLE_KEY")
-SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+SUPABASE_URL = variavel_obrigatoria("SUPABASE_URL")
+SUPABASE_PUBLISHABLE_KEY = variavel_obrigatoria("SUPABASE_PUBLISHABLE_KEY")
+SUPABASE_SERVICE_ROLE_KEY = variavel_obrigatoria("SUPABASE_SERVICE_ROLE_KEY")
+
+# Endereço do site (usado nos links enviados por e-mail)
+BASE_URL = os.getenv("BASE_URL", "http://127.0.0.1:5000").rstrip("/")
 
 
-# Cliente normal
-supabase: Client = create_client(
-    SUPABASE_URL,
-    SUPABASE_PUBLISHABLE_KEY
-)
+def novo_cliente():
+    """
+    Cria um cliente Supabase NOVO a cada uso.
+
+    O cliente guarda a sessão do último usuário que fez
+    login. Se ele fosse compartilhado, um usuário poderia
+    herdar a sessão de outro. O fluxo "implicit" faz os
+    links de e-mail chegarem com #access_token (e não com
+    ?code=), pois o código PKCE ficaria preso ao Python.
+    """
+
+    return create_client(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY,
+        options=ClientOptions(
+            flow_type="implicit",
+            persist_session=False,
+            auto_refresh_token=False
+        )
+    )
 
 
-# Cliente administrativo
+# Cliente administrativo (somente no servidor!)
 supabase_admin: Client = create_client(
     SUPABASE_URL,
-    SUPABASE_SERVICE_ROLE_KEY
+    SUPABASE_SERVICE_ROLE_KEY,
+    options=ClientOptions(
+        persist_session=False,
+        auto_refresh_token=False
+    )
 )
 
 
@@ -110,6 +173,19 @@ def supabase_config():
 
 
 # ==========================================
+# DESFAZER CONTA (ROLLBACK DO CADASTRO)
+# ==========================================
+
+def desfazer_conta(auth_id):
+
+    try:
+        supabase_admin.auth.admin.delete_user(str(auth_id))
+
+    except Exception as erro:
+        print("Erro ao desfazer conta:", erro)
+
+
+# ==========================================
 # CADASTRO
 # ==========================================
 
@@ -154,7 +230,8 @@ def cadastro():
 
     if not senha or not rule.senha_valida(senha):
         return jsonify({
-            "mensagem": "Senha inválida."
+            "mensagem":
+                f"A senha deve ter pelo menos {rule.SENHA_MINIMA} caracteres."
         }), 400
 
 
@@ -176,7 +253,7 @@ def cadastro():
 
     try:
 
-        resposta_auth = supabase.auth.sign_up({
+        resposta_auth = novo_cliente().auth.sign_up({
 
             "email": email,
 
@@ -190,7 +267,7 @@ def cadastro():
                 },
 
                 "email_redirect_to":
-                    "http://127.0.0.1:5000/auth/confirm"
+                    f"{BASE_URL}/auth/confirm"
             }
         })
 
@@ -233,6 +310,19 @@ def cadastro():
             "mensagem":
                 "Não foi possível criar a conta."
         }), 500
+
+
+    # Com a confirmação de e-mail ativa, o Supabase NÃO
+    # devolve erro quando o e-mail já existe: devolve um
+    # usuário "falso" com a lista de identities vazia.
+    identidades = getattr(resposta_auth.user, "identities", None)
+
+    if identidades is not None and len(identidades) == 0:
+
+        return jsonify({
+            "mensagem":
+                "Este e-mail já está cadastrado."
+        }), 409
 
 
     auth_id = resposta_auth.user.id
@@ -278,6 +368,11 @@ def cadastro():
         mensagem_erro = str(erro).lower()
 
 
+        # Desfaz a criação do usuário no Auth para não
+        # deixar uma conta sem perfil (conta "órfã").
+        desfazer_conta(auth_id)
+
+
         if "duplicate key" in mensagem_erro:
 
             return jsonify({
@@ -288,7 +383,7 @@ def cadastro():
 
         return jsonify({
             "mensagem":
-                "Conta criada, mas não foi possível salvar os dados do perfil."
+                "Não foi possível concluir o cadastro. Tente novamente."
         }), 500
 
 
@@ -298,9 +393,11 @@ def cadastro():
 
     if not resposta_perfil.data:
 
+        desfazer_conta(auth_id)
+
         return jsonify({
             "mensagem":
-                "Conta criada, mas não foi possível salvar os dados do perfil."
+                "Não foi possível concluir o cadastro. Tente novamente."
         }), 500
 
 
@@ -350,11 +447,11 @@ def login():
         }), 400
 
 
-    if not senha or not rule.senha_valida(senha):
+    if not senha or senha.strip() == "":
 
         return jsonify({
             "mensagem":
-                "Senha inválida."
+                "Digite sua senha."
         }), 400
 
 
@@ -366,7 +463,7 @@ def login():
 
         resposta_auth = (
 
-            supabase.auth.sign_in_with_password({
+            novo_cliente().auth.sign_in_with_password({
 
                 "email": email,
 
@@ -475,6 +572,16 @@ def login():
 
 
     # ==========================================
+    # INICIAR SESSÃO (COOKIE ASSINADO PELO SERVIDOR)
+    # ==========================================
+
+    session.clear()
+
+    session["auth_id"] = str(auth_id)
+    session["usuario"] = usuario
+
+
+    # ==========================================
     # RESPOSTA
     # ==========================================
 
@@ -531,13 +638,13 @@ def recuperar_senha():
 
     try:
 
-        supabase.auth.reset_password_for_email(
+        novo_cliente().auth.reset_password_for_email(
 
             email,
 
             {
                 "redirect_to":
-                    "http://127.0.0.1:5000/redefinir-senha"
+                    f"{BASE_URL}/redefinir-senha"
             }
         )
 
@@ -587,11 +694,46 @@ def recuperar_senha():
 
 
 # ==========================================
+# USUÁRIO LOGADO
+# ==========================================
+
+@app.route('/api/me')
+def usuario_logado():
+
+    usuario = session.get("usuario")
+
+    if not usuario:
+
+        return jsonify({
+            "logado": False
+        }), 401
+
+    return jsonify({
+        "logado": True,
+        "usuario": usuario
+    }), 200
+
+
+# ==========================================
+# LOGOUT
+# ==========================================
+
+@app.route('/api/logout', methods=['POST'])
+def logout():
+
+    session.clear()
+
+    return jsonify({
+        "mensagem": "Logout realizado com sucesso."
+    }), 200
+
+
+# ==========================================
 # INICIAR SERVIDOR
 # ==========================================
 
 if __name__ == '__main__':
 
     app.run(
-        debug=True
+        debug=os.getenv("FLASK_DEBUG", "1") == "1"
     )

@@ -30,6 +30,7 @@ const botaoConfirmarSenha =
     document.getElementById("botaoConfirmarSenha");
 
 let clienteSupabase = null;
+let senhaAlterada = false;
 
 
 // ==========================================
@@ -94,6 +95,7 @@ function limparMensagens() {
     erroSenha.textContent = "";
     erroConfirmarSenha.textContent = "";
     mensagemRedefinirSenha.textContent = "";
+    mensagemRedefinirSenha.classList.remove("sucesso");
 
     erroSenha.style.display = "none";
     erroConfirmarSenha.style.display = "none";
@@ -105,10 +107,15 @@ function limparMensagens() {
 // MOSTRAR MENSAGEM
 // ==========================================
 
-function mostrarMensagem(mensagem) {
+function mostrarMensagem(mensagem, sucesso = false) {
 
     mensagemRedefinirSenha.textContent =
         mensagem;
+
+    mensagemRedefinirSenha.classList.toggle(
+        "sucesso",
+        sucesso
+    );
 
     mensagemRedefinirSenha.style.display =
         "block";
@@ -338,6 +345,20 @@ formRedefinirSenha.addEventListener(
         }
 
 
+        if (senha.value.length < 6) {
+
+            erroSenha.textContent =
+                "A senha deve ter pelo menos 6 caracteres.";
+
+            erroSenha.style.display =
+                "block";
+
+            senha.focus();
+
+            return;
+        }
+
+
         // ----------------------------------
         // Verifica confirmação
         // ----------------------------------
@@ -427,14 +448,20 @@ formRedefinirSenha.addEventListener(
                 throw resultado.error;
             }
 
+            senhaAlterada = true;
+
 
             // ----------------------------------
             // Sucesso
             // ----------------------------------
 
             mostrarMensagem(
-                "Senha alterada com sucesso! Redirecionando..."
+                "Senha alterada com sucesso! Redirecionando...",
+                true
             );
+
+            // Encerra a sessão temporária de recuperação
+            await clienteSupabase.auth.signOut();
 
 
             setTimeout(
@@ -459,7 +486,9 @@ formRedefinirSenha.addEventListener(
 
         } finally {
 
-            botaoRedefinir.disabled = false;
+            if (!senhaAlterada) {
+                botaoRedefinir.disabled = false;
+            }
 
             botaoRedefinir.textContent =
                 "Redefinir senha";
@@ -481,7 +510,12 @@ async function iniciarPagina() {
         return;
     }
 
-    await prepararRecuperacao();
+    const linkValido = await prepararRecuperacao();
+
+    // Sem sessão de recuperação não há o que enviar.
+    if (!linkValido) {
+        botaoRedefinir.disabled = true;
+    }
 }
 
 iniciarPagina();

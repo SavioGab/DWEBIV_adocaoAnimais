@@ -1,28 +1,44 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Confirmação de e-mail</title>
+    <title>Confirmação de e-mail - AdotaPet</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
-<body>
+<body class="pagina-login">
 
-    <h1 id="titulo">Confirmando seu e-mail...</h1>
+    <main class="login-container">
 
-    <p id="mensagem">
-        Aguarde um momento.
-    </p>
+        <section class="login-card">
 
-    <a
-        id="botaoLogin"
-        href="/login"
-        style="display: none;"
-    >
-        Ir para o login
-    </a>
+            <div class="login-logo">
+                <span>🐾</span>
+                <strong>AdotaPet</strong>
+            </div>
+
+            <h1 id="titulo">Confirmando seu e-mail...</h1>
+
+            <p class="login-subtitulo" id="mensagem">
+                Aguarde um momento.
+            </p>
+
+            <a
+                id="botaoLogin"
+                href="{{ url_for('pagina_login') }}"
+                class="botao-entrar botao-link"
+                style="display: none;"
+            >
+                Ir para o login
+            </a>
+
+        </section>
+
+    </main>
 
 
     <script>
@@ -30,66 +46,64 @@
         const mensagem = document.getElementById("mensagem");
         const botaoLogin = document.getElementById("botaoLogin");
 
-
-        // Pega tudo que está depois do #
-        const hash = window.location.hash;
-
-
-        // Transforma:
-        // #access_token=123&type=signup
-        //
-        // em um objeto que conseguimos acessar
-        const parametros = new URLSearchParams(
-            hash.substring(1)
+        // O Supabase manda o resultado no hash (#...) ou na
+        // query (?...), dependendo do tipo de fluxo.
+        const hash = new URLSearchParams(
+            window.location.hash.substring(1)
         );
 
+        const query = new URLSearchParams(
+            window.location.search
+        );
 
-        const accessToken =
-            parametros.get("access_token");
+        function pegar(nome) {
+            return hash.get(nome) || query.get(nome);
+        }
 
-        const refreshToken =
-            parametros.get("refresh_token");
+        const erro = pegar("error") || pegar("error_code");
+        const descricaoErro = pegar("error_description");
 
-        const tipo =
-            parametros.get("type");
+        // Qualquer um destes indica que o link foi válido.
+        const confirmado =
+            pegar("access_token") ||
+            pegar("code") ||
+            pegar("type") === "signup";
 
 
-        // Verifica se recebemos os tokens
-        if (
-            !accessToken ||
-            !refreshToken
-        ) {
+        if (erro) {
 
-            titulo.textContent =
-                "Erro na confirmação";
+            titulo.textContent = "Não foi possível confirmar";
 
             mensagem.textContent =
-                "Não foi possível encontrar os dados da confirmação.";
+                descricaoErro
+                    ? descricaoErro.replace(/\+/g, " ")
+                    : "O link é inválido ou expirou. Faça o cadastro novamente.";
+
+        } else if (confirmado) {
+
+            // Os tokens NÃO são guardados no navegador.
+            // O login é feito normalmente pela página de login.
+
+            titulo.textContent = "E-mail confirmado!";
+
+            mensagem.textContent =
+                "Seu e-mail foi confirmado com sucesso. Agora você já pode entrar.";
+
+            botaoLogin.style.display = "block";
+
+            // Remove os tokens da barra de endereço
+            window.history.replaceState(
+                {},
+                document.title,
+                window.location.pathname
+            );
 
         } else {
 
-            // O Supabase já confirmou o e-mail.
-            // Aqui apenas salvamos a sessão.
-
-            localStorage.setItem(
-                "access_token",
-                accessToken
-            );
-
-            localStorage.setItem(
-                "refresh_token",
-                refreshToken
-            );
-
-
-            titulo.textContent =
-                "E-mail confirmado!";
+            titulo.textContent = "Erro na confirmação";
 
             mensagem.textContent =
-                "Seu e-mail foi confirmado com sucesso.";
-
-            botaoLogin.style.display =
-                "inline-block";
+                "Não foi possível encontrar os dados da confirmação.";
         }
     </script>
 

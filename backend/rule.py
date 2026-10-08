@@ -3,9 +3,17 @@
 # ==========================================
 
 
+import re
+
+
 # ==========================================
 # VALIDAÇÃO DO NOME
 # ==========================================
+
+# Aceita letras (com acento), podendo ter hífen ou apóstrofo
+# no meio. Exemplos: "Ana-Maria", "D'Ávila".
+PARTE_NOME = re.compile(r"[^\W\d_]+(?:[-'][^\W\d_]+)*")
+
 
 def nome_valido(nome):
 
@@ -22,7 +30,7 @@ def nome_valido(nome):
 
     for nome_atual in nomes:
 
-        if not nome_atual.isalpha():
+        if not PARTE_NOME.fullmatch(nome_atual):
             return False
 
     return True
@@ -39,15 +47,11 @@ def email_valido(email):
     if email == "":
         return False
 
-    if "@" not in email:
-        return False
+    # algo@dominio.ext (sem espaços, um único @,
+    # domínio com ponto e extensão de 2+ letras)
+    padrao = r"[^@\s]+@[^@\s.]+(\.[^@\s.]+)*\.[^@\s.]{2,}"
 
-    parte_depois_do_arroba = email.split("@")[-1]
-
-    if "." not in parte_depois_do_arroba:
-        return False
-
-    return True
+    return re.fullmatch(padrao, email) is not None
 
 
 # ==========================================
@@ -73,9 +77,15 @@ def telefone_valido(telefone):
 # VALIDAÇÃO DA SENHA
 # ==========================================
 
+SENHA_MINIMA = 6  # o Supabase exige no mínimo 6 caracteres
+
+
 def senha_valida(senha):
 
     if senha.strip() == "":
+        return False
+
+    if len(senha) < SENHA_MINIMA:
         return False
 
     return True

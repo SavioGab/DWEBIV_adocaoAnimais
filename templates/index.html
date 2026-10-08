@@ -47,11 +47,14 @@
                     Criar conta
                 </a>
 
-                <a href="#" 
-                id="botao-perfil"
-                 aria-label="Abrir perfil" 
-                 style="display: none;" 
-                 onclick="abrirPerfil(event)">Perfil</a>
+                <a
+                    href="#"
+                    id="botao-perfil"
+                    aria-label="Abrir perfil"
+                    style="display: none;"
+                >
+                    Perfil
+                </a>
 
             </div>
 
@@ -377,94 +380,54 @@
     <script>
 
         // ==========================================
-        // USUÁRIO LOGADO
+        // ELEMENTOS
         // ==========================================
 
-        const usuarioSalvo =
-            sessionStorage.getItem("usuario");
+        const botaoEntrar = document.getElementById("botao-entrar");
+        const botaoCadastro = document.getElementById("botao-cadastro");
+        const botaoPerfil = document.getElementById("botao-perfil");
 
+        const fundoPerfil = document.getElementById("fundo-perfil");
+        const fecharPerfil = document.getElementById("fechar-perfil");
 
-        // ==========================================
-        // BOTÕES DO CABEÇALHO
-        // ==========================================
+        const perfilNome = document.getElementById("perfil-nome");
+        const perfilEmail = document.getElementById("perfil-email");
+        const perfilTelefone = document.getElementById("perfil-telefone");
 
-        const botaoEntrar =
-            document.getElementById("botao-entrar");
-
-        const botaoCadastro =
-            document.getElementById("botao-cadastro");
-
-        const botaoPerfil =
-            document.getElementById("botao-perfil");
-
-
-        // ==========================================
-        // PAINEL DO PERFIL
-        // ==========================================
-
-        const fundoPerfil =
-            document.getElementById("fundo-perfil");
-
-        const fecharPerfil =
-            document.getElementById("fechar-perfil");
-
-
-        // ==========================================
-        // DADOS DO USUÁRIO
-        // ==========================================
-
-        const perfilNome =
-            document.getElementById("perfil-nome");
-
-        const perfilEmail =
-            document.getElementById("perfil-email");
-
-        const perfilTelefone =
-            document.getElementById("perfil-telefone");
-
-
-        // ==========================================
-        // LOGOUT
-        // ==========================================
-
-        const botaoDeslogar =
-            document.getElementById("botao-deslogar");
-
-        const fundoConfirmacao =
-            document.getElementById("fundo-confirmacao");
-
-        const botaoCancelar =
-            document.getElementById("botao-cancelar");
-
-        const botaoConfirmar =
-            document.getElementById("botao-confirmar");
+        const botaoDeslogar = document.getElementById("botao-deslogar");
+        const fundoConfirmacao = document.getElementById("fundo-confirmacao");
+        const botaoCancelar = document.getElementById("botao-cancelar");
+        const botaoConfirmar = document.getElementById("botao-confirmar");
 
 
         // ==========================================
         // VERIFICAR SE ESTÁ LOGADO
+        // (quem diz isso é o servidor, pelo cookie de sessão)
         // ==========================================
 
-        if (usuarioSalvo) {
+        async function verificarLogin() {
 
             try {
 
-                const usuario =
-                    JSON.parse(usuarioSalvo);
+                const resposta = await fetch("/api/me");
 
+                if (!resposta.ok) {
+                    return;
+                }
 
-                // Esconder Entrar e Criar conta
+                const dados = await resposta.json();
+                const usuario = dados.usuario;
 
+                if (!usuario) {
+                    return;
+                }
+
+                // Esconde Entrar e Criar conta
                 botaoEntrar.style.display = "none";
-
                 botaoCadastro.style.display = "none";
 
-
-                // Mostrar Perfil
-
+                // Mostra Perfil
                 botaoPerfil.style.display = "inline-flex";
-
-
-                // Mostrar informações do usuário
 
                 perfilNome.textContent =
                     usuario.nome || "Não informado";
@@ -475,160 +438,75 @@
                 perfilTelefone.textContent =
                     usuario.telefone || "Não informado";
 
-
             } catch (erro) {
 
-                console.error(
-                    "Erro ao carregar usuário:",
-                    erro
-                );
+                console.error("Erro ao verificar login:", erro);
 
             }
 
         }
 
-
-        // ==========================================
-// ABRIR PERFIL
-// ==========================================
-
-botaoPerfil.addEventListener("click", function (event) {
-
-    event.preventDefault();
-
-    fundoPerfil.style.setProperty(
-        "display",
-        "block",
-        "important"
-    );
-
-});
+        verificarLogin();
 
 
         // ==========================================
-        // FECHAR PERFIL
+        // PAINEL DO PERFIL
         // ==========================================
 
-       fecharPerfil.addEventListener("click", function () {
+        function abrirPainelPerfil() {
+            fundoPerfil.style.display = "block";
+        }
 
-    fundoPerfil.style.setProperty(
-        "display",
-        "none",
-        "important"
-    );
+        function fecharPainelPerfil() {
+            fundoPerfil.style.display = "none";
+        }
 
-});
+        botaoPerfil.addEventListener("click", function (event) {
+            event.preventDefault();
+            abrirPainelPerfil();
+        });
 
+        fecharPerfil.addEventListener("click", fecharPainelPerfil);
 
-        // ==========================================
-        // CLICAR FORA DO PAINEL
-        // ==========================================
-
+        // Clicar fora do painel fecha
         fundoPerfil.addEventListener("click", function (event) {
-
-    if (event.target === fundoPerfil) {
-
-        fundoPerfil.style.setProperty(
-            "display",
-            "none",
-            "important"
-        );
-
-    }
-
-});
-
-        // ==========================================
-        // ABRIR CONFIRMAÇÃO DE LOGOUT
-        // ==========================================
-
-        botaoDeslogar.addEventListener(
-            "click",
-            function () {
-
-                fundoConfirmacao.style.display =
-                    "flex";
-
-            }
-        );
-
-
-        // ==========================================
-        // CANCELAR LOGOUT
-        // ==========================================
-
-        botaoCancelar.addEventListener(
-            "click",
-            function () {
-
-                fundoConfirmacao.style.display =
-                    "none";
-
-            }
-        );
-
-
-        // ==========================================
-        // CONFIRMAR LOGOUT
-        // ==========================================
-
-        botaoConfirmar.addEventListener(
-            "click",
-            function () {
-
-                sessionStorage.removeItem(
-                    "usuario"
-                );
-
-                window.location.href = "/";
-
-            }
-        );
-
-    </script>
-
-<script>
-function abrirPerfil(event) {
-    event.preventDefault();
-
-    const fundoPerfil = document.getElementById("fundo-perfil");
-
-    if (!fundoPerfil) {
-        alert("Erro: o elemento fundo-perfil não foi encontrado.");
-        return;
-    }
-
-    fundoPerfil.style.display = "flex";
-}
-
-function fecharPerfil() {
-    const fundoPerfil = document.getElementById("fundo-perfil");
-
-    if (fundoPerfil) {
-        fundoPerfil.style.display = "none";
-    }
-}
-
-document.addEventListener("DOMContentLoaded", function () {
-
-    const fechar = document.getElementById("fechar-perfil");
-    const fundo = document.getElementById("fundo-perfil");
-
-    if (fechar) {
-        fechar.addEventListener("click", fecharPerfil);
-    }
-
-    if (fundo) {
-        fundo.addEventListener("click", function (event) {
-            if (event.target === fundo) {
-                fecharPerfil();
+            if (event.target === fundoPerfil) {
+                fecharPainelPerfil();
             }
         });
-    }
 
-});
-</script>
 
+        // ==========================================
+        // LOGOUT
+        // ==========================================
+
+        botaoDeslogar.addEventListener("click", function () {
+            fundoConfirmacao.style.display = "flex";
+        });
+
+        botaoCancelar.addEventListener("click", function () {
+            fundoConfirmacao.style.display = "none";
+        });
+
+        botaoConfirmar.addEventListener("click", async function () {
+
+            botaoConfirmar.disabled = true;
+
+            try {
+
+                await fetch("/api/logout", { method: "POST" });
+
+            } catch (erro) {
+
+                console.error("Erro ao deslogar:", erro);
+
+            }
+
+            window.location.href = "/";
+
+        });
+
+    </script>
 
 </body>
 

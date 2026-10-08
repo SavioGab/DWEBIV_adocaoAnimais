@@ -1309,3 +1309,39 @@ main {
 .pagina-login .criar-conta {
     margin-top: 25px;
 }
+
+
+/* ==========================================
+   MENSAGENS DE LOGIN / CADASTRO / SENHA
+   ========================================== */
+
+.mensagem-erro {
+    display: none;
+    color: #b42318;
+    font-size: 13px;
+    margin-top: 6px;
+}
+
+.mensagem-login {
+    display: none;
+    margin: 15px 0;
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    line-height: 1.4;
+    text-align: center;
+    color: #b42318;
+    background: #fff0ef;
+}
+
+.mensagem-login.sucesso {
+    color: #28735a;
+    background: #edf3f1;
+}
+
+a.botao-link {
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    box-sizing: border-box;
+}
