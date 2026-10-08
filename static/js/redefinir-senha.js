@@ -2,11 +2,6 @@
 // REDEFINIR SENHA - ADOTAPET
 // ==========================================
 
-
-// ==========================================
-// ELEMENTOS DA PÁGINA
-// ==========================================
-
 const formRedefinirSenha =
     document.getElementById("formRedefinirSenha");
 
@@ -22,8 +17,8 @@ const erroSenha =
 const erroConfirmarSenha =
     document.getElementById("erro-confirmar-senha");
 
-const mensagemRedefinicao =
-    document.getElementById("mensagem-redefinicao");
+const mensagemRedefinirSenha =
+    document.getElementById("mensagem-redefinir-senha");
 
 const botaoRedefinir =
     document.getElementById("botaoRedefinir");
@@ -33,14 +28,6 @@ const botaoSenha =
 
 const botaoConfirmarSenha =
     document.getElementById("botaoConfirmarSenha");
-
-
-// ==========================================
-// SUPABASE
-// ==========================================
-
-// Nome diferente para evitar conflito
-// com outra variável chamada "supabase".
 
 let clienteSupabase = null;
 
@@ -79,12 +66,10 @@ function alternarSenha(campo, botao) {
 botaoSenha.addEventListener(
     "click",
     function () {
-
         alternarSenha(
             senha,
             botaoSenha
         );
-
     }
 );
 
@@ -92,12 +77,10 @@ botaoSenha.addEventListener(
 botaoConfirmarSenha.addEventListener(
     "click",
     function () {
-
         alternarSenha(
             confirmarSenha,
             botaoConfirmarSenha
         );
-
     }
 );
 
@@ -110,11 +93,11 @@ function limparMensagens() {
 
     erroSenha.textContent = "";
     erroConfirmarSenha.textContent = "";
-    mensagemRedefinicao.textContent = "";
+    mensagemRedefinirSenha.textContent = "";
 
     erroSenha.style.display = "none";
     erroConfirmarSenha.style.display = "none";
-    mensagemRedefinicao.style.display = "none";
+    mensagemRedefinirSenha.style.display = "none";
 }
 
 
@@ -124,10 +107,10 @@ function limparMensagens() {
 
 function mostrarMensagem(mensagem) {
 
-    mensagemRedefinicao.textContent =
+    mensagemRedefinirSenha.textContent =
         mensagem;
 
-    mensagemRedefinicao.style.display =
+    mensagemRedefinirSenha.style.display =
         "block";
 }
 
@@ -136,26 +119,15 @@ function mostrarMensagem(mensagem) {
 // INICIALIZAR SUPABASE
 // ==========================================
 
-async function inicializarSupabase() {
+async function iniciarSupabase() {
 
     try {
 
-        const resposta = await fetch(
-            "/api/supabase-config"
-        );
-
-
-        if (!resposta.ok) {
-
-            throw new Error(
-                "Não foi possível carregar a configuração do Supabase."
-            );
-        }
-
+        const resposta =
+            await fetch("/api/supabase-config");
 
         const configuracao =
             await resposta.json();
-
 
         clienteSupabase =
             window.supabase.createClient(
@@ -163,22 +135,18 @@ async function inicializarSupabase() {
                 configuracao.key
             );
 
-
         return true;
-
 
     } catch (erro) {
 
         console.error(
-            "Erro ao inicializar Supabase:",
+            "Erro ao iniciar Supabase:",
             erro
         );
 
-
         mostrarMensagem(
-            "Não foi possível carregar a página. Tente novamente."
+            "Não foi possível iniciar a recuperação de senha."
         );
-
 
         return false;
     }
@@ -186,137 +154,153 @@ async function inicializarSupabase() {
 
 
 // ==========================================
-// PEGAR TOKEN DO LINK
+// PREPARAR SESSÃO DE RECUPERAÇÃO
 // ==========================================
 
-async function prepararSessao() {
-
-    const hash =
-        window.location.hash.substring(1);
-
-
-    const parametros =
-        new URLSearchParams(hash);
-
-
-    const accessToken =
-        parametros.get("access_token");
-
-
-    const refreshToken =
-        parametros.get("refresh_token");
-
-
-    const tipo =
-        parametros.get("type");
-
-
-    // ==========================================
-    // VERIFICAR TOKEN
-    // ==========================================
-
-    if (!accessToken || !refreshToken) {
-
-        mostrarMensagem(
-            "Este link de recuperação é inválido ou expirou."
-        );
-
-
-        botaoRedefinir.disabled = true;
-
-
-        return false;
-    }
-
-
-    // ==========================================
-    // VERIFICAR TIPO
-    // ==========================================
-
-    if (
-        tipo &&
-        tipo !== "recovery"
-    ) {
-
-        mostrarMensagem(
-            "Este link não é válido para redefinição de senha."
-        );
-
-
-        botaoRedefinir.disabled = true;
-
-
-        return false;
-    }
-
-
-    // ==========================================
-    // CRIAR SESSÃO
-    // ==========================================
+async function prepararRecuperacao() {
 
     try {
 
-        const { error } =
-            await clienteSupabase.auth.setSession({
+        // ----------------------------------
+        // 1. Verifica se já existe sessão
+        // ----------------------------------
 
-                access_token:
-                    accessToken,
+        const sessaoAtual =
+            await clienteSupabase.auth.getSession();
 
-                refresh_token:
-                    refreshToken
-
-            });
-
-
-        if (error) {
-
-            console.error(
-                "Erro ao criar sessão:",
-                error
+        if (sessaoAtual.data.session) {
+            console.log(
+                "Sessão de recuperação encontrada."
             );
 
-
-            mostrarMensagem(
-                "Este link de recuperação é inválido ou expirou."
-            );
-
-
-            botaoRedefinir.disabled = true;
-
-
-            return false;
+            return true;
         }
 
 
-        // ==========================================
-        // REMOVER TOKEN DA URL
-        // ==========================================
+        // ----------------------------------
+        // 2. Verifica o hash da URL
+        // ----------------------------------
 
-        window.history.replaceState(
-            {},
-            document.title,
-            window.location.pathname
+        const hash =
+            window.location.hash.substring(1);
+
+        const parametrosHash =
+            new URLSearchParams(hash);
+
+        const accessToken =
+            parametrosHash.get(
+                "access_token"
+            );
+
+        const refreshToken =
+            parametrosHash.get(
+                "refresh_token"
+            );
+
+
+        // ----------------------------------
+        // 3. Se houver tokens, cria sessão
+        // ----------------------------------
+
+        if (accessToken && refreshToken) {
+
+            console.log(
+                "Token de recuperação encontrado."
+            );
+
+            const resultado =
+                await clienteSupabase.auth.setSession({
+                    access_token: accessToken,
+                    refresh_token: refreshToken
+                });
+
+            if (resultado.error) {
+                throw resultado.error;
+            }
+
+            console.log(
+                "Sessão de recuperação criada."
+            );
+
+            // Remove os tokens da URL
+            // depois de criar a sessão.
+            window.history.replaceState(
+                {},
+                document.title,
+                window.location.pathname
+            );
+
+            return true;
+        }
+
+
+        // ----------------------------------
+        // 4. Verifica o parâmetro ?code=
+        // ----------------------------------
+
+        const parametrosURL =
+            new URLSearchParams(
+                window.location.search
+            );
+
+        const codigo =
+            parametrosURL.get("code");
+
+
+        if (codigo) {
+
+            console.log(
+                "Código de recuperação encontrado."
+            );
+
+            const resultado =
+                await clienteSupabase.auth
+                    .exchangeCodeForSession(codigo);
+
+            if (resultado.error) {
+                throw resultado.error;
+            }
+
+            console.log(
+                "Sessão criada através do código."
+            );
+
+            // Remove o código da URL.
+            window.history.replaceState(
+                {},
+                document.title,
+                window.location.pathname
+            );
+
+            return true;
+        }
+
+
+        // ----------------------------------
+        // 5. Nada foi encontrado
+        // ----------------------------------
+
+        console.log(
+            "Nenhum token ou código encontrado."
         );
 
+        mostrarMensagem(
+            "O link de recuperação é inválido ou expirou."
+        );
 
-        return true;
+        return false;
 
 
     } catch (erro) {
 
         console.error(
-            "Erro ao preparar sessão:",
+            "Erro ao preparar recuperação:",
             erro
         );
 
-
         mostrarMensagem(
-            "Não foi possível validar o link de recuperação."
+            "O link de recuperação é inválido ou expirou."
         );
-
-
-        botaoRedefinir.disabled = true;
-
 
         return false;
     }
@@ -324,30 +308,7 @@ async function prepararSessao() {
 
 
 // ==========================================
-// INICIAR PÁGINA
-// ==========================================
-
-async function iniciarPagina() {
-
-    const supabaseInicializado =
-        await inicializarSupabase();
-
-
-    if (!supabaseInicializado) {
-
-        return;
-    }
-
-
-    await prepararSessao();
-}
-
-
-iniciarPagina();
-
-
-// ==========================================
-// FORMULÁRIO
+// REDEFINIR SENHA
 // ==========================================
 
 formRedefinirSenha.addEventListener(
@@ -356,18 +317,17 @@ formRedefinirSenha.addEventListener(
 
         event.preventDefault();
 
-
         limparMensagens();
 
 
-        // ======================================
-        // VALIDAR SENHA VAZIA
-        // ======================================
+        // ----------------------------------
+        // Verifica senha
+        // ----------------------------------
 
         if (senha.value.trim() === "") {
 
             erroSenha.textContent =
-                "Digite uma senha.";
+                "Digite uma nova senha.";
 
             erroSenha.style.display =
                 "block";
@@ -378,14 +338,16 @@ formRedefinirSenha.addEventListener(
         }
 
 
-        // ======================================
-        // VALIDAR CONFIRMAÇÃO VAZIA
-        // ======================================
+        // ----------------------------------
+        // Verifica confirmação
+        // ----------------------------------
 
-        if (confirmarSenha.value.trim() === "") {
+        if (
+            confirmarSenha.value.trim() === ""
+        ) {
 
             erroConfirmarSenha.textContent =
-                "Confirme sua senha.";
+                "Confirme sua nova senha.";
 
             erroConfirmarSenha.style.display =
                 "block";
@@ -396,11 +358,14 @@ formRedefinirSenha.addEventListener(
         }
 
 
-        // ======================================
-        // VERIFICAR SENHAS IGUAIS
-        // ======================================
+        // ----------------------------------
+        // Verifica se são iguais
+        // ----------------------------------
 
-        if (senha.value !== confirmarSenha.value) {
+        if (
+            senha.value !==
+            confirmarSenha.value
+        ) {
 
             erroConfirmarSenha.textContent =
                 "As senhas não são iguais.";
@@ -408,85 +373,78 @@ formRedefinirSenha.addEventListener(
             erroConfirmarSenha.style.display =
                 "block";
 
-            confirmarSenha.focus();
+            senha.value = "";
+            confirmarSenha.value = "";
+
+            senha.focus();
 
             return;
         }
 
 
-        // ======================================
-        // VERIFICAR SUPABASE
-        // ======================================
+        // ----------------------------------
+        // Desabilita botão
+        // ----------------------------------
 
-        if (!clienteSupabase) {
-
-            mostrarMensagem(
-                "A página ainda não foi carregada completamente."
-            );
-
-            return;
-        }
-
-
-        // ======================================
-        // DESABILITAR BOTÃO
-        // ======================================
-
-        botaoRedefinir.disabled =
-            true;
+        botaoRedefinir.disabled = true;
 
         botaoRedefinir.textContent =
-            "Alterando...";
+            "Alterando senha...";
 
-
-        // ======================================
-        // ALTERAR SENHA
-        // ======================================
 
         try {
 
-            const { error } =
-                await clienteSupabase.auth.updateUser({
+            // ----------------------------------
+            // Verifica sessão atual
+            // ----------------------------------
 
-                    password:
-                        senha.value
+            const resultadoSessao =
+                await clienteSupabase.auth.getSession();
 
-                });
-
-
-            // ======================================
-            // VERIFICAR ERRO
-            // ======================================
-
-            if (error) {
-
-                console.error(
-                    "Erro ao alterar senha:",
-                    error
-                );
-
+            if (
+                !resultadoSessao.data.session
+            ) {
 
                 mostrarMensagem(
-                    "Não foi possível alterar sua senha. O link pode ter expirado."
+                    "O link de recuperação expirou. Solicite um novo link."
                 );
-
-
-                botaoRedefinir.disabled =
-                    false;
-
-                botaoRedefinir.textContent =
-                    "Redefinir senha";
 
                 return;
             }
 
 
-            // ======================================
-            // SUCESSO
-            // ======================================
+            // ----------------------------------
+            // Atualiza senha
+            // ----------------------------------
 
-            window.location.href =
-                "/login";
+            const resultado =
+                await clienteSupabase.auth.updateUser({
+                    password: senha.value
+                });
+
+
+            if (resultado.error) {
+                throw resultado.error;
+            }
+
+
+            // ----------------------------------
+            // Sucesso
+            // ----------------------------------
+
+            mostrarMensagem(
+                "Senha alterada com sucesso! Redirecionando..."
+            );
+
+
+            setTimeout(
+                function () {
+                    window.location.href =
+                        "/login";
+                },
+                1000
+            );
+
 
         } catch (erro) {
 
@@ -495,18 +453,35 @@ formRedefinirSenha.addEventListener(
                 erro
             );
 
-
             mostrarMensagem(
-                "Não foi possível alterar sua senha. Tente novamente."
+                "Não foi possível alterar a senha. Solicite um novo link de recuperação."
             );
 
+        } finally {
 
-            botaoRedefinir.disabled =
-                false;
+            botaoRedefinir.disabled = false;
 
             botaoRedefinir.textContent =
                 "Redefinir senha";
         }
-
     }
 );
+
+
+// ==========================================
+// INICIALIZAÇÃO
+// ==========================================
+
+async function iniciarPagina() {
+
+    const supabaseIniciado =
+        await iniciarSupabase();
+
+    if (!supabaseIniciado) {
+        return;
+    }
+
+    await prepararRecuperacao();
+}
+
+iniciarPagina();
