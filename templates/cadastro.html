@@ -8,6 +8,11 @@
     <title>Cadastro - AdotaPet</title>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script
+        src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+        async
+        defer
+    ></script>
 </head>
 
 <body class="pagina-login">
@@ -184,6 +189,9 @@
                 </div>
 
 
+                {% include '_captcha.html' %}
+
+
                 <!-- Mensagem geral -->
                 <div
                     id="mensagem-cadastro"
@@ -221,6 +229,7 @@
 
 
     <!-- JavaScript -->
+    <script src="{{ url_for('static', filename='js/captcha.js') }}"></script>
     <script src="{{ url_for('static', filename='js/cadastro.js') }}"></script>
 
 </body>

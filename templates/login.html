@@ -8,6 +8,11 @@
     <title>Login - AdotaPet</title>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script
+        src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+        async
+        defer
+    ></script>
 </head>
 
 <body class="pagina-login">
@@ -103,6 +108,9 @@
                 </a>
 
 
+                {% include '_captcha.html' %}
+
+
                 <!-- Mensagem geral -->
                 <div
                     id="mensagem-login"
@@ -140,6 +148,7 @@
 
 
     <!-- JavaScript -->
+    <script src="{{ url_for('static', filename='js/captcha.js') }}"></script>
     <script src="{{ url_for('static', filename='js/login.js') }}"></script>
 
 </body>

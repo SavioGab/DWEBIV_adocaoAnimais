@@ -11,6 +11,11 @@
         rel="stylesheet"
         href="{{ url_for('static', filename='style.css') }}"
     >
+    <script
+        src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+        async
+        defer
+    ></script>
 </head>
 
 <body class="pagina-login">
@@ -66,6 +71,9 @@
                 </div>
 
 
+                {% include '_captcha.html' %}
+
+
                 <div
                     id="mensagem-recuperacao"
                     class="mensagem-login"
@@ -99,6 +107,7 @@
     </main>
 
 
+    <script src="{{ url_for('static', filename='js/captcha.js') }}"></script>
     <script
         src="{{ url_for('static', filename='js/recuperar-senha.js') }}"
     ></script>

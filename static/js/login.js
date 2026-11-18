@@ -129,6 +129,22 @@ formLogin.addEventListener("submit", async function (event) {
 
 
     // ======================================
+    // CAPTCHA (OBRIGATÓRIO)
+    // ======================================
+
+    const tokenCaptcha = obterTokenCaptcha();
+
+    if (!tokenCaptcha) {
+
+        mensagemLogin.textContent = MENSAGEM_CAPTCHA;
+
+        mensagemLogin.style.display = "block";
+
+        return;
+    }
+
+
+    // ======================================
     // PREPARAR DADOS
     // ======================================
 
@@ -136,7 +152,9 @@ formLogin.addEventListener("submit", async function (event) {
 
         email: email.value.trim(),
 
-        senha: senha.value
+        senha: senha.value,
+
+        captcha: tokenCaptcha
 
     };
 
@@ -238,6 +256,9 @@ formLogin.addEventListener("submit", async function (event) {
 
         botaoEntrar.textContent =
             "Entrar";
+
+        // O token do captcha só vale uma vez
+        reiniciarCaptcha();
 
     }
 

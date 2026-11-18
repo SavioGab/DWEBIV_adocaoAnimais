@@ -3,6 +3,8 @@ import rule
 import os
 import secrets
 
+import httpx
+
 from supabase import create_client, Client
 
 # O nome da classe de opções mudou entre versões do supabase-py
@@ -82,6 +84,21 @@ SUPABASE_SERVICE_ROLE_KEY = variavel_obrigatoria("SUPABASE_SERVICE_ROLE_KEY")
 BASE_URL = os.getenv("BASE_URL", "http://127.0.0.1:5000").rstrip("/")
 
 
+# ==========================================
+# CAPTCHA (CLOUDFLARE TURNSTILE)
+# ==========================================
+
+# Chave PÚBLICA: vai para o navegador (aparece no HTML).
+TURNSTILE_SITE_KEY = variavel_obrigatoria("TURNSTILE_SITE_KEY")
+
+# Chave SECRETA: fica só no servidor, nunca vai para o HTML.
+TURNSTILE_SECRET_KEY = variavel_obrigatoria("TURNSTILE_SECRET_KEY")
+
+TURNSTILE_URL = (
+    "https://challenges.cloudflare.com/turnstile/v0/siteverify"
+)
+
+
 def novo_cliente():
     """
     Cria um cliente Supabase NOVO a cada uso.
@@ -113,6 +130,75 @@ supabase_admin: Client = create_client(
         auto_refresh_token=False
     )
 )
+
+
+@app.context_processor
+def injetar_chave_captcha():
+    """Deixa {{ turnstile_site_key }} disponível em todos os templates."""
+
+    return {"turnstile_site_key": TURNSTILE_SITE_KEY}
+
+
+def verificar_captcha(dados):
+    """
+    Confirma o captcha com a Cloudflare.
+
+    Retorna None quando o captcha é válido. Caso contrário,
+    retorna a resposta de erro (já pronta) para a rota devolver.
+
+    O token só vale UMA vez e só é aceito se a Cloudflare
+    confirmar. Se a Cloudflare não puder ser consultada, o acesso
+    é negado (nunca "libera por padrão").
+    """
+
+    token = dados.get("captcha")
+
+    if not token or not isinstance(token, str):
+
+        return jsonify({
+            "mensagem":
+                "Confirme que você não é um robô."
+        }), 400
+
+
+    try:
+
+        resposta = httpx.post(
+            TURNSTILE_URL,
+            data={
+                "secret": TURNSTILE_SECRET_KEY,
+                "response": token,
+                "remoteip": request.remote_addr
+            },
+            timeout=5.0
+        )
+
+        resultado = resposta.json()
+
+    except Exception as erro:
+
+        print("Erro ao verificar captcha:", erro)
+
+        return jsonify({
+            "mensagem":
+                "Não foi possível verificar o captcha. Tente novamente."
+        }), 503
+
+
+    if resultado.get("success") is not True:
+
+        print(
+            "Captcha recusado:",
+            resultado.get("error-codes")
+        )
+
+        return jsonify({
+            "mensagem":
+                "Verificação do captcha falhou. Tente novamente."
+        }), 400
+
+
+    return None
 
 
 # ==========================================
@@ -192,9 +278,9 @@ def desfazer_conta(auth_id):
 @app.route('/api/cadastro', methods=['POST'])
 def cadastro():
 
-    dados = request.get_json()
+    dados = request.get_json(silent=True)
 
-    if not dados:
+    if not isinstance(dados, dict) or not dados:
         return jsonify({
             "mensagem": "Nenhum dado foi enviado."
         }), 400
@@ -248,6 +334,16 @@ def cadastro():
 
 
     # ==========================================
+    # CAPTCHA (OBRIGATÓRIO)
+    # ==========================================
+
+    erro_captcha = verificar_captcha(dados)
+
+    if erro_captcha:
+        return erro_captcha
+
+
+    # ==========================================
     # CRIAR USUÁRIO NO SUPABASE AUTH
     # ==========================================
 
@@ -280,6 +376,19 @@ def cadastro():
         )
 
         mensagem_erro = str(erro).lower()
+
+
+        # O Supabase limita quantos e-mails podem ser enviados
+        # por hora (principalmente no plano gratuito).
+        if (
+            "rate limit" in mensagem_erro
+            or "over_email_send_rate_limit" in mensagem_erro
+        ):
+
+            return jsonify({
+                "mensagem":
+                    "Muitas tentativas de envio de e-mail. Aguarde alguns minutos e tente novamente."
+            }), 429
 
 
         if (
@@ -420,9 +529,9 @@ def cadastro():
 @app.route('/api/login', methods=['POST'])
 def login():
 
-    dados = request.get_json()
+    dados = request.get_json(silent=True)
 
-    if not dados:
+    if not isinstance(dados, dict) or not dados:
 
         return jsonify({
             "mensagem":
@@ -453,6 +562,16 @@ def login():
             "mensagem":
                 "Digite sua senha."
         }), 400
+
+
+    # ==========================================
+    # CAPTCHA (OBRIGATÓRIO)
+    # ==========================================
+
+    erro_captcha = verificar_captcha(dados)
+
+    if erro_captcha:
+        return erro_captcha
 
 
     # ==========================================
@@ -602,14 +721,14 @@ def login():
 @app.route('/api/recuperar-senha', methods=['POST'])
 def recuperar_senha():
 
-    dados = request.get_json()
+    dados = request.get_json(silent=True)
 
 
     # ==========================================
     # VERIFICAR DADOS
     # ==========================================
 
-    if not dados:
+    if not isinstance(dados, dict) or not dados:
 
         return jsonify({
             "mensagem":
@@ -630,6 +749,16 @@ def recuperar_senha():
             "mensagem":
                 "Digite um e-mail válido."
         }), 400
+
+
+    # ==========================================
+    # CAPTCHA (OBRIGATÓRIO)
+    # ==========================================
+
+    erro_captcha = verificar_captcha(dados)
+
+    if erro_captcha:
+        return erro_captcha
 
 
     # ==========================================

@@ -1345,3 +1345,15 @@ a.botao-link {
     text-decoration: none;
     box-sizing: border-box;
 }
+
+
+/* ==========================================
+   CAPTCHA (Cloudflare Turnstile)
+   ========================================== */
+
+.captcha-container {
+    display: flex;
+    justify-content: center;
+    min-height: 65px;
+    margin: 15px 0;
+}

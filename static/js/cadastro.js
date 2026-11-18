@@ -270,6 +270,19 @@ formCadastro.addEventListener(
         // PREPARAR DADOS PARA O BACK-END
         // ======================================
 
+        // O captcha é obrigatório
+        const tokenCaptcha = obterTokenCaptcha();
+
+        if (!tokenCaptcha) {
+
+            mensagemCadastro.textContent = MENSAGEM_CAPTCHA;
+
+            mensagemCadastro.style.display = "block";
+
+            return;
+        }
+
+
         const dadosCadastro = {
 
             nome: nomeDigitado,
@@ -280,7 +293,9 @@ formCadastro.addEventListener(
 
             senha: senha.value,
 
-            confirmarSenha: confirmarSenha.value
+            confirmarSenha: confirmarSenha.value,
+
+            captcha: tokenCaptcha
 
         };
 
@@ -395,6 +410,9 @@ formCadastro.addEventListener(
 
             botaoCadastrar.textContent =
                 "Criar conta";
+
+            // O token do captcha só vale uma vez
+            reiniciarCaptcha();
 
         }
 

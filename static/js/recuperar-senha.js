@@ -67,6 +67,22 @@ formRecuperarSenha.addEventListener(
 
 
         // ==========================================
+        // CAPTCHA (OBRIGATÓRIO)
+        // ==========================================
+
+        const tokenCaptcha = obterTokenCaptcha();
+
+        if (!tokenCaptcha) {
+
+            mensagemRecuperacao.textContent = MENSAGEM_CAPTCHA;
+
+            mensagemRecuperacao.style.display = "block";
+
+            return;
+        }
+
+
+        // ==========================================
         // ENVIAR PEDIDO
         // ==========================================
 
@@ -89,7 +105,8 @@ formRecuperarSenha.addEventListener(
                     },
 
                     body: JSON.stringify({
-                        email: email.value.trim()
+                        email: email.value.trim(),
+                        captcha: tokenCaptcha
                     })
                 }
             );
@@ -151,6 +168,9 @@ formRecuperarSenha.addEventListener(
 
             botaoEnviar.textContent =
                 "Enviar link";
+
+            // O token do captcha só vale uma vez
+            reiniciarCaptcha();
         }
     }
 );
